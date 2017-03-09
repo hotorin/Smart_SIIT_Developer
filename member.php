@@ -108,7 +108,7 @@ desired effect
               <li class="user-header">  <!-- The user image in the menu -->
                 <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
                 <p>
-                  <?php echo $_SESSION['fname']; ?> - Ground Division Member
+                  <?php echo $_SESSION['fname']; ?> - Admin
 
                 </p>
               </li>
@@ -286,6 +286,7 @@ desired effect
 
           <ul class="treeview-menu">
             <li><a href="admin.php?mode=0">Add/Delete Van Data</a></li>
+            <li><a href="admin.php?mode=2">Add Week Schedule</a></li>
           </ul>
         </li>
 
@@ -300,6 +301,16 @@ desired effect
           <ul class="treeview-menu">
             <li><a href="admin.php?mode=1">Change Users Information</a></li>
           </ul>
+        </li>
+
+        <li class="treeview">
+          <li>
+            <a href="member.php?mode=5">
+              <i class="fa fa-circle-o text-aqua">
+              </i>
+              <span>Check Driver Report</span>
+            </a>
+          </li>
         </li>
         <?php
         }else if($_SESSION['tier'] == 'Driver'){
@@ -465,7 +476,7 @@ desired effect
                   <div class="input-group-addon">
                     <i class="fa fa-calendar"></i>
                   </div>
-                  <input type="text" name="date_select" class="form-control pull-right" id="datepicker">
+                  <input type="text" name="date_select" class="form-control pull-right" id="datepicker" required>
                 </div>
                 <!-- /.input group -->
               </div>
@@ -475,7 +486,7 @@ desired effect
               <div class="form-group">
                 <label>From</label>
                 <div class="input-group" style="margin-bottom:10px;">
-                  <input type="text" name="from_time" class="form-control timepicker">
+                  <input type="text" name="from_time" class="form-control timepicker" required>
                   <div class="input-group-addon">
                     <i class="fa fa-clock-o"></i>
                   </div>
@@ -489,7 +500,7 @@ desired effect
               <div class="form-group">
                 <label>To</label>
                 <div class="input-group" style="margin-bottom:10px;">
-                  <input type="text" name="to_time" class="form-control timepicker">
+                  <input type="text" name="to_time" class="form-control timepicker" required>
                   <div class="input-group-addon">
                     <i class="fa fa-clock-o"></i>
                   </div>
@@ -501,7 +512,7 @@ desired effect
             <!-- Textarea -->
             <div class="form-group">
               <label>Place to go :</label>
-              <input type="text" name="destination" class="form-control" placeholder="Please Enter Destination"></input>
+              <input type="text" name="destination" class="form-control" placeholder="Please Enter Destination" required></input>
             </div>
         </form>
             <!-- textarea -->
@@ -689,8 +700,13 @@ desired effect
               <input type="hidden" name="request_no" value=<?php echo $_POST['r_no']; ?>>
               <input type="hidden" name="request_status" value=<?php echo $_POST['r_status']; ?>>
 
-            <div class="form-group">
-              <label>Place to go :</label>
+            <div class="form-group col-xs-6">
+              <label>Initial Place :</label>
+              <input type="text" name="init_place" class="form-control" placeholder="Please insert place" required></input>
+            </div>
+
+            <div class="form-group col-xs-6">
+              <label>Destination :</label>
               <input type="text" name="destination" class="form-control" value="<?php echo $_POST['request']; ?>" disabled></input>
             </div>
 
@@ -742,9 +758,171 @@ desired effect
         </div>
     </section>
     <?php
-    }else if($_GET['mode'] == 5 && isset($_SESSION['tier'])){
-
+  }else if($_GET['mode'] == 5 && isset($_SESSION['tier']) && $_SESSION['tier'] != 'Driver'){
     ?>
+    <section class="content-header">
+      <h1>
+        Confirm Report :
+        <?php echo $_SESSION['fname']; ?>
+      </h1>
+    </section>
+
+    <section class="content">
+      <div class="box box-info" style="padding-top:1%;">
+        <div class="box-header" style="padding-left:2%;padding-right:2%;">
+          <h3 class="box-title" style="margin-top:10px"><b>Users Report</b></h3>
+          <hr>
+        </div>
+        <?php
+
+          $q = "SELECT * FROM request, member WHERE request.request_by = member.member_id AND
+                                                    request.request_by = ".$_SESSION['user_no']." AND
+                                                    request.request_status = 1
+                                              ORDER BY request_from
+                                                    ;";
+
+          $res = $db -> query($q);
+          if ($res && $res->num_rows >= 1){
+            while($row = $res -> fetch_array()){
+          ?>
+          <form name="input_work" id="work_input" action="member.php?mode=6" method="post">
+              <input type="hidden" name="request" value="<?php echo $row['request_to_place']; ?>">
+              <input type="hidden" name="from_time" value="<?php echo $row['request_from']; ?>">
+              <input type="hidden" name="to_time" value="<?php echo $row['request_to']; ?>">
+              <input type="hidden" name="description" value="<?php echo $row['request_description']; ?>">
+              <input type="hidden" name="f_name" value="<?php echo $row['full_name']; ?>">
+              <input type="hidden" name="member_tele" value="<?php echo $row['member_tele']; ?>">
+              <input type="hidden" name="date" value="<?php echo $row['request_date']; ?>">
+              <input type="hidden" name="r_no" value="<?php echo $row['request_no']; ?>">
+              <input type="hidden" name="r_status" value="<?php echo $row['request_status']; ?>">
+              <input type="hidden" name="r_kilo" value="<?php echo $row['request_mile']; ?>">
+              <input type="hidden" name="r_passenger" value="<?php echo $row['request_passenger']; ?>">
+              <input type="hidden" name="r_assign" value="<?php echo $row['request_assign']; ?>">
+              <input type="hidden" name="r_date" value="<?php echo $row['request_date']; ?>">
+              <input type="hidden" name="r_init" value="<?php echo $row['request_init_place']; ?>">
+            <a href="#">
+              <div class="button1" onClick="document.forms['input_work'].submit();">
+                <div class="row" style="margin-left:0px;margin-right:0px">
+                  <div class="col-md-2" style="padding-left:4%;padding-top:1.5%;padding-bottom:2%;">
+                      <input type="text" class="knob" value="100" data-width="90" data-height="90" data-fgColor="#932ab6">
+                  </div>
+                  <div style="padding-left:4%;padding-top:0%;padding-bottom:2%;">
+                      <div class="col-xs-3">Request To : </div>
+                        <div><?php echo $row['request_to_place']; ?> </div>
+                      <div class="col-xs-3">From(Time) : </div>
+                        <div><?php echo substr($row['request_from'],0,5); ?></div>
+                      <div class="col-xs-3">To(Time) : </div>
+                        <div><?php echo substr($row['request_to'],0,5); ?></div>
+                      <div class="col-xs-3">Request Description : </div>
+                        <div><?php echo $row['request_description']; ?> </div>
+                      <div class="col-xs-3">Request By : </div>
+                        <div><?php echo $row['full_name']; ?></div>
+                      <div class="col-xs-3">Telephone Number : </div>
+                        <div><?php echo $row['member_tele']; ?></div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </form>
+          <hr>
+          <?php
+            }
+          }else{
+          ?>
+          <div style="padding-top:15%;padding-bottom:20%">
+            <h1 style="text-align: center;">
+              You don't have any work today.
+            </h1>
+          </div>
+        <?php
+          }
+        ?>
+      </div>
+    </section>
+    <?php
+  }else if($_GET['mode'] == 6 && isset($_SESSION['tier']) && $_SESSION['tier'] != 'Driver'){
+    ?>
+    <section class="content-header">
+      <h1>
+        Van Report System
+        <small>- Please Choose accept or decline.</small>
+      </h1>
+    </section>
+
+    <section class="content">
+      <div class="box box-danger">
+        <div class="box-header" style="padding-left:2%;padding-right:2%;">
+          <h3 class="box-title" style="margin-top:1%"><b>User Report</b></h3>
+          <hr>
+        </div>
+        <div class="box-body" style="padding-top:0px">
+          <div class="box-body" style="padding-top:0px">
+
+            <form action="confirm.php" method="post" id="request_form">
+              <input type="hidden" name="mode" value=11>
+              <input type="hidden" name="request_no" value=<?php echo $_POST['r_no']; ?>>
+              <input type="hidden" name="request_assign" value=<?php echo $_POST['r_assign']; ?>>
+              <input type="hidden" name="request_date" value=<?php echo $_POST['r_date']; ?>>
+              <input type="hidden" name="request_kilo" value=<?php echo $_POST['r_kilo']; ?>>
+              <input type="hidden" name="request_passenger" value=<?php echo $_POST['r_passenger']; ?>>
+              <input type="hidden" name="request_to" value=<?php echo $_POST['request']; ?>>
+              <input type="hidden" name="request_init" value=<?php echo $_POST['r_init']; ?>>
+
+            <div class="form-group col-xs-6">
+              <label>Initial Place :</label>
+              <input type="text" name="init_place" class="form-control" value="<?php echo $_POST['r_init']; ?>" disabled></input>
+            </div>
+
+            <div class="form-group col-xs-6">
+              <label>Place to go :</label>
+              <input type="text" name="destination" class="form-control" value="<?php echo $_POST['request']; ?>" disabled></input>
+            </div>
+
+            <div class="form-group col-xs-6">
+              <label>From</label>
+              <input type="text" name="from_time" class="form-control" value="<?php echo substr($_POST['from_time'],0,5); ?>" disabled></input>
+            </div>
+
+            <div class="form-group col-xs-6">
+              <label>To</label>
+              <input type="text" name="to_time" class="form-control" value="<?php echo substr($_POST['to_time'],0,5); ?>" disabled></input>
+            </div>
+            <!-- Textarea -->
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" name="destination" class="form-control" value="<?php echo $_POST['description']; ?>" disabled></input>
+            </div>
+
+            <div class="form-group col-xs-12">
+              <label>Request By</label>
+              <input type="text" name="destination" class="form-control" value="<?php echo $_POST['f_name']; ?>" disabled></input>
+            </div>
+            <div class="form-group col-xs-6">
+              <label>Kilometre That Use</label>
+              <input type="number" name="start_mile" class="form-control" value="<?php echo $_POST['r_kilo']; ?>" required disabled></input>
+            </div>
+
+            <div class="form-group col-xs-6">
+              <label>Number of Passenger</label>
+              <input type="number" name="passen_num" class="form-control" value="<?php echo $_POST['r_passenger']; ?>" required disabled></input>
+            </div>
+        </form>
+
+            <div  class="col-md-3"></div>
+            <div  class="col-md-3" style="padding-top:20px;padding-bottom:2%">
+              <button type="submit" class="btn btn-block btn-primary" form="request_form">Confirm, It is correct</button>
+            </div>
+            <div  class="col-md-3" style="padding-top:20px;padding-bottom:2%">
+              <form action="confirm.php" method="post" id="request_form">
+                <input type="hidden" name="mode" value=13>
+                <input type="hidden" name="request_no" value=<?php echo $_POST['r_no']; ?>>
+                <input type="hidden" name="request_status" value=<?php echo $_POST['r_status']; ?>>
+              <button type="submit" class="btn btn-block btn-danger">Decline, It fault</button>
+              </form>
+            </div>
+
+        </div>
+    </section>
     <?php
     }
   }

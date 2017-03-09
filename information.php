@@ -105,7 +105,7 @@ desired effect
               <li class="user-header">  <!-- The user image in the menu -->
                 <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
                 <p>
-                  <?php echo $_SESSION['fname']; ?> - Ground Division Member
+                  <?php echo $_SESSION['fname']; ?> - Admin
 
                 </p>
               </li>
@@ -282,6 +282,7 @@ desired effect
 
                   <ul class="treeview-menu">
                     <li><a href="admin.php?mode=0">Add/Delete Van Data</a></li>
+                    <li><a href="admin.php?mode=2">Add Week Schedule</a></li>
                   </ul>
                 </li>
 
@@ -296,6 +297,16 @@ desired effect
                   <ul class="treeview-menu">
                     <li><a href="admin.php?mode=1">Change Users Information</a></li>
                   </ul>
+                </li>
+
+                <li class="treeview">
+                  <li>
+                    <a href="member.php?mode=5">
+                      <i class="fa fa-circle-o text-aqua">
+                      </i>
+                      <span>Check Driver Report</span>
+                    </a>
+                  </li>
                 </li>
                 <?php
                 }else if($_SESSION['tier'] == 'Driver'){
@@ -389,15 +400,15 @@ desired effect
             </div>
 
             <div class="form-group">
-              <label style="margin-top:2%">Request By</label> : <input type="text" class="form-control pull-right" value="<?php echo $_POST['full_name']; ?>" disabled>
+              <label style="margin-top:2%">Request By (ขอโดย)</label> : <input type="text" class="form-control pull-right" value="<?php echo $_POST['full_name']; ?>" disabled>
               <br>
-              <label style="margin-top:10px">Date</label> : <input type="text" class="form-control pull-right" value="<?php echo $_POST['date']; ?>" disabled>
+              <label style="margin-top:10px">Date (วันที่)</label> : <input type="text" class="form-control pull-right" value="<?php echo $_POST['date']; ?>" disabled>
               <br>
-              <label style="margin-top:10px">From</label> : <input type="text" class="form-control pull-right" value=<?php echo substr($_POST['from'],0,5); ?> disabled>
+              <label style="margin-top:10px">From (ตั้งแต่)</label> : <input type="text" class="form-control pull-right" value=<?php echo substr($_POST['from'],0,5); ?> disabled>
               <br>
-              <label style="margin-top:10px">To</label> : <input type="text" class="form-control pull-right" value=<?php echo substr($_POST['to'],0,5); ?> disabled>
+              <label style="margin-top:10px">To (จนถึง)</label> : <input type="text" class="form-control pull-right" value=<?php echo substr($_POST['to'],0,5); ?> disabled>
               <br>
-              <label style="margin-top:10px">Description</label> :
+              <label style="margin-top:10px">Description (ข้อมูลเพิ่มเติม)</label> :
               <textarea class="form-control" rows="5" placeholder="<?php echo $_POST['description']; ?>" disabled></textarea>
             </div>
           </div>
@@ -413,9 +424,12 @@ desired effect
               <input type="hidden" name="mode" value=5>
               <input type="hidden" name="request_number" value=<?php echo $_POST['request_no']; ?>>
               <input type="hidden" name="assign_by" value=<?php echo $_SESSION['user_no']; ?>>
-              <label style="margin-top:2%">Assign To Van Number</label>
+              <input type="hidden" name="start_check" value=<?php echo $_POST['from']; ?>>
+              <input type="hidden" name="end_check" value=<?php echo $_POST['to']; ?>>
+              <input type="hidden" name="date_check" value=<?php echo $_POST['date']; ?>>
+              <label style="margin-top:2%">Assign To Van Number (มอบงานให้กับรถหมายเลข)</label>
               <select class="form-control" name="assign_to">
-                <option selected disabled>Please Select The Van to assign the work</option>
+                <option selected disabled>โปรดเลือกรถตู้เพื่อมอบหมายงาน</option>
                 <?php
                   $q = "SELECT * FROM van";
                   $res = $db -> query($q);
@@ -426,11 +440,11 @@ desired effect
                   }
                 ?>
               </select>
-              <label style="margin-top:10px">Assign By (Member Number)</label> :
+              <label style="margin-top:10px">Assign By (มอบหมายโดยใคร) (Member Number)</label> :
               <input type="text" class="form-control pull-right" value="<?php echo $_SESSION['user_no']; ?>" disabled><br>
             </form>
 
-            <label style="margin-top:10px">Description</label> :
+            <label style="margin-top:10px">Description (ข้อมูลเพิ่มเติม)</label> :
             <div style="padding-bottom:20px">
               <textarea class="form-control" name="comment" rows="10" placeholder="Please Type your comment if have..." form="confirm_form"></textarea>
             </div>

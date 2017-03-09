@@ -107,7 +107,7 @@ desired effect
               <li class="user-header">  <!-- The user image in the menu -->
                 <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
                 <p>
-                  <?php echo $_SESSION['fname']; ?> - Ground Division Member
+                  <?php echo $_SESSION['fname']; ?> - Admin
 
                 </p>
               </li>
@@ -283,6 +283,7 @@ desired effect
 
                   <ul class="treeview-menu">
                     <li><a href="admin.php?mode=0">Add/Delete Van Data</a></li>
+                    <li><a href="admin.php?mode=2">Add Week Schedule</a></li>
                   </ul>
                 </li>
 
@@ -297,6 +298,16 @@ desired effect
                   <ul class="treeview-menu">
                     <li><a href="admin.php?mode=1">Change Users Information</a></li>
                   </ul>
+                </li>
+
+                <li class="treeview">
+                  <li>
+                    <a href="member.php?mode=5">
+                      <i class="fa fa-circle-o text-aqua">
+                      </i>
+                      <span>Check Driver Report</span>
+                    </a>
+                  </li>
                 </li>
                 <?php
                 }else if($_SESSION['tier'] == 'Driver'){
@@ -406,13 +417,14 @@ desired effect
 
           </div>
           <?php
-          if(isset($_POST['date_pick'])){
+          if(isset($_POST['date_pick']) && $_POST['date_pick'] != ''){
             echo "This is the schedule at : ".$_POST['date_pick'];
           }
           else{
             echo "This is the schedule at : ".date("Y-m-d");
           }
           ?>
+        <div style="overflow-x:auto;">
         <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
         <tr style="height:30px;">
             <th bgcolor="#F0F8FF" style="text-align:center;width:10%;">Information</th>
@@ -431,13 +443,13 @@ desired effect
         </tr>
         <?php
 
-        $time_start = array();
-        $time_end = array();
-        $request_description = array();
-        $request_by = array();
         $count = 0;
+        $timestart = array();
+        $timeend = array();
+        $requestdescription = array();
+        $requestby = array();
 
-        if(isset($_POST['date_pick'])){
+        if(isset($_POST['date_pick']) && $_POST['date_pick'] != ''){
           $q = "SELECT * FROM request, member WHERE request_date = '".$_POST['date_pick']."' AND
                                                     request_assign = ".$_GET['v']." AND
                                                     request.request_by = member.member_id
@@ -453,32 +465,16 @@ desired effect
         }
         $res = $db -> query($q);
         while($row = $res -> fetch_array()){
-          $split1 = explode(':', $row['request_from'], 2);
-          if($split1[0][0] == "0"){
-            $split1_1 = explode('0', $split1[0], 2);
-            $split2 = $split1_1[1];
-          }
-          else{
-            $split2 = $split1[0];
-          }
-          array_push($time_start, (int)$split2);
-
-          $split1 = explode(':', $row['request_to'], 2);
-          if($split1[0][0] == "0"){
-            $split1_1 = explode('0', $split1[0], 2);
-            $split2 = $split1_1[1];
-          }
-          else{
-            $split2 = $split1[0];
-          }
-          array_push($time_end, (int)$split2);
-          array_push($request_description, $row['request_description']);
-          array_push($request_by, $row['full_name']);
+          array_push($timestart, $row['request_from']);
+          array_push($timeend, $row['request_to']);
+          array_push($requestdescription, $row['request_description']);
+          array_push($requestby, $row['full_name']);
         }
 
         ?>
 
         <?php
+
         for($x = 0 ; $x < 3 ; $x++){
           $count = 0;
           switch ($x) {
@@ -492,80 +488,57 @@ desired effect
               $txt_title = "Description";
               break;
           }
+          echo '<tr style="height:40px;">';
+          echo '<td style="text-align:center;">'.$txt_title.'</td>';
 
-        ?>
-        <tr style="height:40px;">
-          <td style="text-align:center;"><?php echo $txt_title; ?></td>
-          <?php
           for($row_num = 6 ; $row_num < 19 ; $row_num++){
-            switch ($row_num) {
-              case ($row_num < 10):
-                if(isset($time_start[$count]) && $time_start[$count] <= $row_num && $time_end[$count] != $row_num){
-                  echo '<td bgcolor="yellow" style="text-align:center;">';
-                  switch($x){
-                    case 0;
-                      echo "Reserved";
-                      break;
-                    case 1:
-                      echo $request_by[$count];
-                      break;
-                    case 2:
-                      echo $request_description[$count];
-                      break;
-                  }
-                  echo '</td>';
-                }else{
-                  echo '<td style="text-align:center;">';
-                  echo '</td>';
-                }
-                break;
-              case ($row_num >= 10):
-                if(isset($time_start[$count]) && $time_start[$count] <= $row_num && $time_end[$count] != $row_num-1 && $time_end[$count] > $row_num-1){
-                  echo '<td bgcolor="yellow" style="text-align:center;">';
-                  switch($x){
-                    case 0;
-                      echo "Reserved";
-                      break;
-                    case 1:
-                      echo $request_by[$count];
-                      break;
-                    case 2:
-                      echo $request_description[$count];
-                      break;
-                  }
-                  echo '</td>';
-                }else{
-                  if(isset($time_start[$count+1])){
-                    $count++;
-                  }
-                  if(isset($time_start[$count]) && $time_start[$count] == $row_num){
-                    echo '<td bgcolor="yellow" style="text-align:center;">';
-                    switch($x){
-                      case 0;
-                        echo "Reserved";
-                        break;
-                      case 1:
-                        echo $request_by[$count];
-                        break;
-                      case 2:
-                        echo $request_description[$count];
-                        break;
-                    }
-                    echo '</td>';
-                  }else{
-                    echo '<td style="text-align:center;">';
-                    echo '</td>';
-                  }
-                }
-                break;
+            if($row_num < 10){
+              $compare = '0'.$row_num.':00:00';
+            }else{
+              $compare = $row_num.':00:00';
+            }
+
+            if(isset($timestart[$count]) && $timestart[$count] <= $compare && $compare <= $timeend[$count]){
+
+              echo '<td bgcolor="yellow" style="text-align:center;">';
+              switch($x){
+                case 0;
+                  echo "Reserved";
+                  break;
+                case 1:
+                  echo $requestby[$count];
+                  break;
+                case 2:
+                  echo $requestdescription[$count];
+                  break;
+              }
+              echo '</td>';
+            }else if(isset($timestart[$count + 1]) && $timestart[$count + 1] <= $compare && $compare <= $timeend[$count + 1]){
+              $count++;
+              echo '<td bgcolor="yellow" style="text-align:center;">';
+              switch($x){
+                case 0;
+                  echo "Reserved";
+                  break;
+                case 1:
+                  echo $requestby[$count];
+                  break;
+                case 2:
+                  echo $requestdescription[$count];
+                  break;
+              }
+              echo '</td>';
+            }else {
+              echo '<td style="text-align:center;">';
+              echo '</td>';
             }
           }
-          ?>
-        </tr>
-      <?php
-      }
-      ?>
+          echo '</tr>';
+        }
+
+        ?>
       </table>
+    </div>
     </div>
     </div>
     </section>
@@ -582,7 +555,11 @@ desired effect
 
     <section class="content">
 
-      <div class="col-sm-12" style="text-align:center;padding-bottom:40px">
+      <div class="box col-sm-12" style="text-align:center;padding-bottom:40px">
+        <div class="box-header">
+          <h3 class="box-title" style="margin-top:20px">Van And Driver Information</h3>
+          <hr>
+        </div>
 
         <?php
         $q = 'SELECT * FROM van, driver, member WHERE van.van_no = '.$_GET['v'].' AND
@@ -591,103 +568,93 @@ desired effect
         $res = $db -> query($q);
         while($row = $res -> fetch_array()){
         ?>
-
-        <div class="col-sm-3">
-          Profile Image<br>
-          <img src="resource/image/profile.png" height="50%" width="60%" style="margin-top:20px;" class="user-image" alt="User Image">
-        </div>
-        <div class="col-sm-9">
-          Personal Information
-          <center>
-            <table border="2" style="width:80%;margin-top:20px;">
-              <tr style="height:40px;">
-                <td style="text-align:center;width:20%;">Name</td>
-                <td style="text-align:center;width:50%"><?php echo $row['full_name']; ?></td>
-              </tr>
-              <tr style="height:40px;">
-                <td style="text-align:center;width:20%">Position</td>
-                <td style="text-align:center;width:50%"><?php echo $row['driver_position']; ?></td>
-              </tr>
-              <tr style="height:40px;">
-                <td style="text-align:center;width:20%">Van Number</td>
-                <td style="text-align:center;width:50%"><?php echo $row['van_no']; ?></td>
-              </tr>
-              <tr style="height:40px;">
-                <td style="text-align:center;width:20%">Location</td>
-                <td style="text-align:center;width:50%"><?php echo $row['location']; ?></td>
-              </tr>
-              <tr style="height:60px;">
-                <td style="text-align:center;width:20%">More Information</td>
-                <td style="text-align:center;width:50%"><?php echo $row['email']; ?></td>
-              </tr>
-            </table>
-          </center>
+        <div class="col-sm-12" style="padding-bottom:20px">
+          <div class="col-sm-3">
+            <img src="resource/image/profile.png" height="50%" width="60%" style="margin-top:5.5%;" class="user-image" alt="User Image">
+          </div>
+          <div class="col-sm-9">
+            <center>
+              <table class="table table-bordered table-hover" border="2" style="width:80%;margin-top:1%;">
+                <tr style="height:40px;">
+                  <td style="text-align:center;width:20%;">Name</td>
+                  <td style="text-align:center;width:50%"><?php echo $row['full_name']; ?></td>
+                </tr>
+                <tr style="height:40px;">
+                  <td style="text-align:center;width:20%">Position</td>
+                  <td style="text-align:center;width:50%"><?php echo $row['driver_position']; ?></td>
+                </tr>
+                <tr style="height:40px;">
+                  <td style="text-align:center;width:20%">Van Number</td>
+                  <td style="text-align:center;width:50%"><?php echo $row['van_no']; ?></td>
+                </tr>
+                <tr style="height:40px;">
+                  <td style="text-align:center;width:20%">Location</td>
+                  <td style="text-align:center;width:50%"><?php echo $row['location']; ?></td>
+                </tr>
+                <tr style="height:60px;">
+                  <td style="text-align:center;width:20%">More Information</td>
+                  <td style="text-align:center;width:50%"><?php echo $row['email']; ?></td>
+                </tr>
+              </table>
+            </center>
+          </div>
         </div>
         <?php
         }
         ?>
-      </div>
-      <div>
         &nbsp;
-      <div class="col-sm-13">
+        <hr>
         <?php
             if(isset($_SESSION['tier'])){
               if($_SESSION['tier'] == 'Admin'){
         ?>
-        <div class="box" style="padding-bottom:30px;padding-left:30px;padding-right:30px">
-            <div class="box-header">
-              <h3 class="box-title" style="margin-top:20px">Other Information</h3>
-            </div>
-                  <!-- <table border="2" style="width:100%;margin-top:20px;"> -->
-            <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
-                <thead>
-                  <tr style="height:25px;">
-                    <td style="text-align:center;width:10%;">Date</td>
-                    <td style="text-align:center;width:10%;">Distance</td>
-                    <td style="text-align:center;width:10%;">Number of Passenger</td>
-                    <td style="text-align:center;width:10%;">From</td>
-                    <td style="text-align:center;width:10%;">To</td>
-                    <td style="text-align:center;width:10%;">Driver Name</td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php
-                    $q = 'SELECT * FROM data_information, driver, member  WHERE driver_van_num = '.$_GET['v'].'
-                                                                  AND   data_information.driver_no = driver.driver_no
-                                                                  AND   driver.member_id = member.member_id;';
-                    $res = $db -> query($q);
-                    while($row = $res -> fetch_array()){
-                  ?>
-                      <tr style="height:25px;">
-                        <td style="text-align:center;width:10%;"><?php echo $row['data_date']; ?></td>
-                        <td style="text-align:center;width:10%;"><?php echo $row['data_distance']; ?></td>
-                        <td style="text-align:center;width:10%;"><?php echo $row['data_passanger']; ?></td>
-                        <td style="text-align:center;width:10%;"><?php echo $row['data_from']; ?></td>
-                        <td style="text-align:center;width:10%;"><?php echo $row['data_to']; ?></td>
-                        <td style="text-align:center;width:10%;"><?php echo $row['full_name']; ?></td>
-                      </tr>
-                  <?php
-                    }
-                 ?>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div class="box-header">
+          <h3 class="box-title" style="margin-top:20px">Other Information</h3>
         </div>
-      <?php
-        }
-      }
-      ?>
+        <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
+            <thead>
+              <tr style="height:25px;">
+                <td style="text-align:center;width:10%;">Date</td>
+                <td style="text-align:center;width:10%;">Distance</td>
+                <td style="text-align:center;width:10%;">Number of Passenger</td>
+                <td style="text-align:center;width:10%;">From</td>
+                <td style="text-align:center;width:10%;">To</td>
+                <td style="text-align:center;width:10%;">Driver Name</td>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+                $q = 'SELECT * FROM data_information, driver, member  WHERE driver_van_num = '.$_GET['v'].'
+                                                              AND   data_information.driver_no = driver.driver_no
+                                                              AND   driver.member_id = member.member_id;';
+                $res = $db -> query($q);
+                while($row = $res -> fetch_array()){
+              ?>
+                  <tr style="height:25px;">
+                    <td style="text-align:center;width:10%;"><?php echo $row['data_date']; ?></td>
+                    <td style="text-align:center;width:10%;"><?php echo $row['data_distance']; ?></td>
+                    <td style="text-align:center;width:10%;"><?php echo $row['data_passanger']; ?></td>
+                    <td style="text-align:center;width:10%;"><?php echo $row['data_from']; ?></td>
+                    <td style="text-align:center;width:10%;"><?php echo $row['data_to']; ?></td>
+                    <td style="text-align:center;width:10%;"><?php echo $row['full_name']; ?></td>
+                  </tr>
+              <?php
+                }
+             ?>
+            </tbody>
+          </table>
+        <?php
+              }
+            }
+        ?>
+
+      </div>
+        &nbsp; <!-- Fix Magic Bug - - -->
     </section>
 <?php
   }
 ?>
-<!-- =========================================================================================================== -->
-
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
-
+</div>
   <!-- Main Footer -->
   <footer class="main-footer">
     <!-- To the right -->

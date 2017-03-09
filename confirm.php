@@ -183,15 +183,35 @@ session_start();
 <?php
   }
   else if($_POST['mode'] == 5){
-    if(isset($_POST['assign_to'])){
+
+    $status_check = True;
+    $q = 'SELECT * FROM request WHERE request_assign = '.$_POST['assign_to'].' AND request_date = "'.$_POST['date_check'].'";';
+    $res = $db -> query($q);
+    while($row = $res -> fetch_array()){
+      if( $_POST['start_check'] >= $row['request_from'] && $_POST['start_check'] <= $row['request_to']){
+        $status_check = FALSE;
+      }else if($_POST['start_check'] < $row['request_from'] && $_POST['end_check'] <= $row['request_to']){
+        $status_check = FALSE;
+      }
+    }
+
+    if(isset($_POST['assign_to']) && $status_check){
       $q = 'UPDATE request SET      request_assign ='.$_POST['assign_to'].',
                                     request_assign_by ='.$_POST['assign_by'].',
                                     request_approve ="Accepted",
                                     request_comment ="'.$_POST['comment'].'"
                           WHERE   request_no ='.$_POST['request_number'].';';
       $res = $db -> query($q);
-    }
-    else{
+    }else if(!$status_check){
+?>
+      <script type='text/javascript'>
+        alert("You can't confirm because this van have work at that time already!");
+      </script>
+      <script type='text/javascript'>
+        window.location = 'member.php?mode=2';
+      </script>
+      <?php
+    }else{
 ?>
       <script type='text/javascript'>
         alert("You can't confirm because you didn't choose the Van to assign!");
@@ -208,6 +228,7 @@ session_start();
 <script type='text/javascript'>
   window.location = 'member.php?mode=2';
 </script>
+
 
 <?php
   }
@@ -313,7 +334,8 @@ session_start();
     $cal_mile = abs($_POST['end_mile'] - $_POST['start_mile']);
     $q = 'UPDATE request SET      request_status = 1,
                                   request_mile = '.$cal_mile.',
-                                  request_passenger ='.$_POST['passen_num'].'
+                                  request_passenger ='.$_POST['passen_num'].',
+                                  request_init_place = "'.$_POST['init_place'].'"
                          WHERE    request_no ='.$_POST['request_no'].';';
     $res = $db -> query($q);
 ?>
@@ -322,6 +344,83 @@ session_start();
 </script>
 <script type='text/javascript'>
   window.location = 'member.php?mode=3';
+</script>
+<?php
+  }else if($_POST['mode'] == 11){
+    $q = 'UPDATE request SET      request_status = 2
+                         WHERE    request_no ='.$_POST['request_no'].';';
+    $res = $db -> query($q);
+    $q = 'SELECT * FROM request, van WHERE  request_no ='.$_POST['request_no'].' AND
+                                            request.request_assign = van.van_no;';
+    $res = $db -> query($q);
+    while($row = $res -> fetch_array()){
+      $van_number = $row['van_no'];
+      $driver_number = $row['driver_no'];
+    }
+    $q = 'INSERT INTO data_information (data_date, data_distance, data_passanger, data_from, data_to, driver_no, driver_van_num)
+                              VALUES ("'.$_POST['request_date'].'",
+                                      '.$_POST['request_kilo'].',
+                                      '.$_POST['request_passenger'].',
+                                      "'.$_POST['request_init'].'",
+                                      "'.$_POST['request_to'].'",
+                                      '.$driver_number.',
+                                      '.$van_number.');';
+    $res = $db -> query($q);
+?>
+<script type='text/javascript'>
+  alert('You confirm successful! Thank you for submit it.');
+</script>
+<script type='text/javascript'>
+  window.location = 'member.php?mode=5';
+</script>
+<?php
+  }else if($_POST['mode'] == 12){
+
+    $date_post_start = $_POST['start_date'];
+    $date_post_end = $_POST['end_date'];
+
+    while($date_post_start <= $date_post_end){
+      $q = 'INSERT INTO request ( request_date,
+                                  request_from,
+                                  request_to,
+                                  request_to_place,
+                                  request_description,
+                                  request_approve,
+                                  request_assign,
+                                  request_assign_by,
+                                  request_by)
+                                VALUES ("'.$date_post_start.'",
+                                        "'.$_POST['from_time'].'",
+                                        "'.$_POST['to_time'].'",
+                                        "'.$_POST['destination'].'",
+                                        "'.$_POST['description'].'",
+                                        "Accepted",
+                                        '.$_POST['assign_to'].',
+                                        0,
+                                        0);';
+      $res = $db -> query($q);
+      $date_post_start = date('Y-m-d', strtotime("+1 day", strtotime($date_post_start)));
+    }
+
+
+?>
+<script type='text/javascript'>
+  alert('You have assign weekly work to van number <?php echo $_POST['assign_to'];?>.');
+</script>
+<script type='text/javascript'>
+  window.location = 'admin.php?mode=2';
+</script>
+<?php
+  }else if($_POST['mode'] == 13){
+    $q = 'UPDATE request SET      request_status = 0
+                         WHERE    request_no ='.$_POST['request_no'].';';
+    $res = $db -> query($q);
+?>
+<script type='text/javascript'>
+  alert('You have decline the report, please wait driver to submit it again.');
+</script>
+<script type='text/javascript'>
+  window.location = 'admin.php?mode=5';
 </script>
 <?php
   }
