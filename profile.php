@@ -284,6 +284,20 @@ desired effect
                   <ul class="treeview-menu">
                     <li><a href="admin.php?mode=0">Add/Delete Van Data</a></li>
                     <li><a href="admin.php?mode=2">Add Week Schedule</a></li>
+                    <li><a href="analysis_van.php">Van Analysis</a></li>
+                  </ul>
+                </li>
+
+                <li class="treeview">
+                  <a href="#"><i class="fa fa-link"></i><span>Stock Management</span>
+                    <span class="pull-right-container">
+                      <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                  </a>
+
+                  <ul class="treeview-menu">
+                    <li><a href="manage_stock.php?mode=0">Add/Delete Stock</a></li>
+                    <li><a href="manage_stock.php?mode=1">View Stock</a></li>
                   </ul>
                 </li>
 
@@ -309,6 +323,15 @@ desired effect
                     </a>
                   </li>
                 </li>
+                <li class="treeview">
+                  <li>
+                    <a href="weeklySum.php">
+                      <i class="fa fa-circle-o text-aqua">
+                      </i>
+                      <span>Weekly Report</span>
+                    </a>
+                  </li>
+                </li>
                 <?php
                 }else if($_SESSION['tier'] == 'Driver'){
                 ?>
@@ -325,6 +348,23 @@ desired effect
                   </li>
                 <?php
                   }else if(isset($_SESSION['tier'])){
+                    if($_SESSION['tier'] == 'Technician'){
+                    ?>
+                      <li class="header" style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px">
+                        <center>Technician Menu</center></li>
+                        <li class="treeview">
+                          <a href="#"><i class="fa fa-link"></i><span>Stock Management</span>
+                            <span class="pull-right-container">
+                              <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                          </a>
+                          <ul class="treeview-menu">
+                            <li><a href="manage_stock.php?mode=0">Add/Delete Stock</a></li>
+                            <li><a href="manage_stock.php?mode=1">View Stock</a></li>
+                          </ul>
+                        </li>
+                  <?php
+                    }
               ?>
               <li class="header" style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px">
               <center>Member Menu</center></li>
@@ -334,6 +374,15 @@ desired effect
                     <i class="fa fa-circle-o text-aqua">
                     </i>
                     <span>Check Driver Report</span>
+                  </a>
+                </li>
+              </li>
+              <li class="treeview">
+                <li>
+                  <a href="weeklySum.php">
+                    <i class="fa fa-circle-o text-aqua">
+                    </i>
+                    <span>Weekly Report</span>
                   </a>
                 </li>
               </li>

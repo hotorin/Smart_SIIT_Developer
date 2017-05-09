@@ -423,8 +423,62 @@ session_start();
   window.location = 'admin.php?mode=5';
 </script>
 <?php
+  }else if($_POST['mode'] == 14){
+    $q = 'INSERT INTO stock (stock_name, stock_total, stock_lot, stock_docnum, stock_price, stock_com, stock_place, stock_totalp)
+                              VALUES ("'.$_POST['stock_name'].'",
+                                      '.$_POST['stock_total'].',
+                                      "'.$_POST['date_select_stock'].'",
+                                      "'.$_POST['stock_docnum'].'",
+                                      '.$_POST['stock_price'].',
+                                      "'.$_POST['stock_com'].'",
+                                      "'.$_POST['stock_place'].'",
+                                      '.$_POST['stock_totalp'].');';
+    $res = $db -> query($q);
+  ?>
+  <script type='text/javascript'>
+  alert('คุณทำรายการสำเร็จแล้ว');
+  </script>
+  <script type='text/javascript'>
+  window.location = 'manage_stock.php?mode=0';
+  </script>
+<?php
+  }else if($_POST['mode'] == 15){
+    for($i = 0 ; $i < count($_SESSION['array_withdraw']); $i++){
+      $q = 'SELECT * FROM stock WHERE stock_id = "'.$_SESSION['array_withdraw'][$i]['stock_num'].'";';
+      $res = $db -> query($q);
+      while($row = $res -> fetch_array()){
+        $stock_use = $row['stock_total'];
+        $stock_use = $stock_use - $_SESSION['array_withdraw'][$i]['total'];
+        if($stock_use < 0){
+          $_SESSION['array_withdraw'] = array();
+  ?>
+          <script type='text/javascript'>
+          alert('ของในสต็อกมีไม่พอ');
+          </script>
+          <script type='text/javascript'>
+          window.location = 'manage_stock.php?mode=0';
+          </script>
+  <?php
+        }
+        $q1 = 'UPDATE stock SET      stock_total = '.$stock_use.'
+                           WHERE    stock_id ='.$_SESSION['array_withdraw'][$i]['stock_num'].';';
+        $res1 = $db -> query($q1);
+        $_SESSION['array_withdraw'] = array();
+      }
+    }
+  ?>
+
+  <script type='text/javascript'>
+  alert('คุณทำรายการสำเร็จแล้ว');
+  </script>
+  <script type='text/javascript'>
+  window.location = 'manage_stock.php?mode=0';
+  </script>
+
+<?php
   }
 ?>
+
 <script type='text/javascript'>
   alert('The User number <?php echo $_POST['member_no'];?> has been modified!');
 </script>

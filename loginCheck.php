@@ -15,6 +15,7 @@ if(isset($_POST['username']) && isset($_POST['password'])){
 					$_SESSION['e_mail'] = $row['email'];
 					$_SESSION['tier'] = $row['member_tier'];
 					$_SESSION['tele_number'] = $row['member_tele'];
+					$_SESSION['array_withdraw'] = array();
 			}
 		}
 		else{

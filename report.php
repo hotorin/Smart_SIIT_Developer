@@ -91,30 +91,54 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
           <h3 class="box-title" style="margin-top:10px"><b><center>Broken Equipment Detail</center></b></h3>
           <hr>
         </div>
-        <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
+		<div class="box" style="paddin-top:30px;padding-bottom:30px;padding-left:30px;padding-right:30px;padding-bottom:20px">
+          <div class="col-sm-3"></div>
+          <div class="col-sm-10" style="margin-top:20px">
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <label>Search by Equipment's name</label>
+              </div>
+								<form action="report.php" method="post" id="search_equipment">
+                  <input type="text" name="equipment_search" class="form-control pull-right" placeholder="โปรดใส่ชื่อ Equipment">
+								</form>
+              </div>
+							<form action="report.php" method="post" id="reset_search"></form>
+          </div>
+          <button style="margin-top:20px" type="submit" class="btn btn-primary" form="search_equipment">Submit</button>
+          <button style="margin-top:20px" type="submit" class="btn btn-danger" form="reset_search">Reset</button>
+          <table id="example2" class="table table-bordered table-hover" style="width:100%;margin-top:20px" align="center">
+            <thead>
+        <table id="example2" class="table table-bordered table-hover" style="width:100%;margin-top:20px" align="center" >
           <thead>
             <tr>
-              <td style="text-align:center;width:10%">Number</td>
+              <td style="text-align:center;width:10%" >Number</td>
               <td style="text-align:center">Broken Equipment</td>
               <td style="text-align:center">Location</td>
               <td style="text-align:center">Desctiption</td>
+			  <td style="text-align:center">User's name</td>
               <td style="text-align:center">Status</td>
               </tr>
           </thead>
           <?php
-            $q = "SELECT * FROM broken_equipment;";
-            $res = $db -> query($q);
-            while($row = $res -> fetch_array()){
-          ?>
-          <tbody>
+              if(isset($_POST['equipment_search'])){
+                $q = 'SELECT * FROM broken_equipment WHERE equipment_name = "'.$_POST['equipment_search'].'";';
+              }else{
+                $q = 'SELECT * FROM broken_equipment ORDER BY equipment_ID DESC ';
+              }
+              $res = $db -> query($q);
+              while($row = $res -> fetch_array()){
+            ?>
+          <body>
             <tr>
               <td style="text-align:center"><?php echo $row['equipment_ID']; ?></td>
               <td height="50px" width="200px" style="text-align:center;"><?php echo $row['equipment_name']; ?></td>
               <td width="20%" style="text-align:center"><?php echo $row['equipment_campus']; ?></td>
               <td width="30%" style="text-align:center"><?php echo $row['equipment_decription']; ?></td>
+			  <td width="30%" style="text-align:center"><?php echo $row['equipment_username']; ?></td>
               <td width="20%" style="text-align:center"><?php echo $row['equipment_status']; ?></td>
 
                 <form id="prof_form" action="brokenEquip_check.php" method="post">
+					<input type="hidden" name="mode" value=0 >
                     <input type="hidden" name="equipment_no" value=<?php echo $row['equipment_ID']; ?> >
                     <input type="hidden" name="equipment_name" value=<?php echo $row['equipment_name']; ?> >
                     <input type="hidden" name="equipment_campus" value=<?php echo $row['equipment_campus']; ?> >
@@ -129,7 +153,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
             <?php
             }
             ?>
-          </tbody>
+          </body>
           </table>
         </div>
 <!-- //contact -->
