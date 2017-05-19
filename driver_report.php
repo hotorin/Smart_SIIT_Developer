@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 require_once('connect.php');
 session_start();
@@ -532,146 +531,79 @@ desired effect
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <center>
-        <h1>
-          Please Select Current Jobs or History to view the information.
-        </h1>
-      </center>
+
     </section>
 
 <!-- ========================================== Header ========================================================= -->
     <!-- Main content -->
     <section class="content">
-      <?php
-      if(isset($_GET['mode'])){
-        if($_GET['mode'] == 0){
-      ?>
-      <div class="box" style="padding-left:10px;padding-right:10px;padding-bottom:30px">
-        <div class="box-header">
-          <h3 class="box-title" style="margin-top:10px"><b>Broken Equipment Detail</b></h3>
+      <div class="box box-info" style="padding-top:1%;">
+        <div class="box-header" style="padding-left:2%;padding-right:2%;">
+          <h3 class="box-title" style="margin-top:10px"><b>Driver Report</b></h3>
           <hr>
         </div>
-        <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
-          <thead>
-            <tr>
-              <td style="text-align:center;width:10%">หมายเลข</td>
-              <td style="text-align:center">ชื่อสิ่งของ</td>
-              <td style="text-align:center">สถานที่</td>
-              <td style="text-align:center">รายละเอียด</td>
-              <td style="text-align:center">สถานะ</td>
-              <td style="text-align:center">ข้อมูล</td>
-              <td style="text-align:center">เบิก</td>
-            </tr>
-          </thead>
-          <?php
-            $q = "SELECT * FROM broken_equipment WHERE equipment_status <> 'Finish';";
-            $res = $db -> query($q);
+
+        <?php
+          $q = "SELECT * FROM request, member WHERE request_date = '".date("Y-m-d")."' AND
+                                            request.request_status = 0 AND
+                                            request_approve = 'Accepted' AND
+                                            request.request_by = member.member_id
+                                            ORDER BY request_from;";
+          $res = $db -> query($q);
+          if ($res && $res->num_rows >= 1){
             while($row = $res -> fetch_array()){
           ?>
-          <tbody>
-            <tr>
-              <td style="text-align:center"><?php echo $row['equipment_ID']; ?></td>
-              <td height="50px" width="200px" style="text-align:center;"><?php echo $row['equipment_name']; ?></td>
-              <td width="20%" style="text-align:center"><?php echo $row['equipment_campus']; ?></td>
-              <td width="30%" style="text-align:center"><?php echo $row['equipment_decription']; ?></td>
-              <td width="20%" style="text-align:center"><?php echo $row['equipment_status']; ?></td>
-              <td style="text-align:center;width:18%;">
-                <form id="prof_form" action="brokenEquip_check.php" method="post">
-                    <input type="hidden" name="equipment_no" value=<?php echo $row['equipment_ID']; ?> >
-                    <input type="hidden" name="equipment_name" value=<?php echo $row['equipment_name']; ?> >
-                    <input type="hidden" name="equipment_campus" value=<?php echo $row['equipment_campus']; ?> >
-                    <input type="hidden" name="equipment_decription" value="<?php echo $row['equipment_decription']; ?>" >
-                    <input type="hidden" name="equipment_status" value=<?php echo $row['equipment_status']; ?> >
-                    <input type="hidden" name="equipment_building" value=<?php echo $row['equipment_building']; ?> >
-                    <input type="hidden" name="equipment_room" value=<?php echo $row['equipment_room']; ?> >
-                    <input type="hidden" name="equipment_email" value=<?php echo $row['equipment_email']; ?> >
-                    <input type="hidden" name="equipment_photo" value=<?php echo $row['equipment_photo']; ?> >
-                    <input type="submit" class="btn btn-block btn-primary" value="Link">
-                </form>
-              </td>
-              <td style="text-align:center;width:18%;">
-                <form id="prof_form" action="withdraw.php" method="post">
-                    <input type="hidden" name="equipment_no" value=<?php echo $row['equipment_ID']; ?> >
-                    <input type="hidden" name="equipment_name" value=<?php echo $row['equipment_name']; ?> >
-                    <input type="hidden" name="equipment_campus" value=<?php echo $row['equipment_campus']; ?> >
-                    <input type="hidden" name="equipment_decription" value="<?php echo $row['equipment_decription']; ?>" >
-                    <input type="hidden" name="equipment_status" value=<?php echo $row['equipment_status']; ?> >
-                    <input type="hidden" name="equipment_building" value=<?php echo $row['equipment_building']; ?> >
-                    <input type="hidden" name="equipment_room" value=<?php echo $row['equipment_room']; ?> >
-                    <input type="hidden" name="equipment_email" value=<?php echo $row['equipment_email']; ?> >
-                    <input type="submit" class="btn btn-block btn-success" value="Link">
-                </form>
-              </td>
-            </tr>
-            <?php
-            }
-            ?>
-          </tbody>
-          </table>
-        </div>
-      <?php
-        }
-        else if($_GET['mode'] == 1){
-      ?>
-      <div class="box" style="padding-left:10px;padding-right:10px;padding-bottom:30px">
-        <div class="box-header">
-          <h3 class="box-title" style="margin-top:10px"><b>Broken Equipment Detail</b></h3>
+          <form name="input_work" id="work_input" action="member.php?mode=4" method="post">
+              <input type="hidden" name="request" value="<?php echo $row['request_to_place']; ?>">
+              <input type="hidden" name="from_time" value="<?php echo $row['request_from']; ?>">
+              <input type="hidden" name="to_time" value="<?php echo $row['request_to']; ?>">
+              <input type="hidden" name="description" value="<?php echo $row['request_description']; ?>">
+              <input type="hidden" name="f_name" value="<?php echo $row['full_name']; ?>">
+              <input type="hidden" name="member_tele" value="<?php echo $row['member_tele']; ?>">
+              <input type="hidden" name="date" value="<?php echo $row['request_date']; ?>">
+              <input type="hidden" name="r_no" value="<?php echo $row['request_no']; ?>">
+              <input type="hidden" name="r_status" value="<?php echo $row['request_status']; ?>">
+            <a href="#">
+              <div class="button1" onClick="document.forms['input_work'].submit();">
+                <div class="row" style="margin-left:0px;margin-right:0px">
+                  <div class="col-md-2" style="padding-left:4%;padding-top:1.5%;padding-bottom:2%;">
+                      <input type="text" class="knob" value="100" data-width="90" data-height="90" data-fgColor="#932ab6">
+                  </div>
+                  <div style="padding-left:4%;padding-top:0%;padding-bottom:2%;">
+                      <div class="col-xs-3">งานของรถหมายเลข : </div>
+                        <div><?php echo $row['request_assign']; ?> </div>
+                      <div class="col-xs-3">สถานที่ปลายทาง : </div>
+                        <div><?php echo $row['request_to_place']; ?> </div>
+                      <div class="col-xs-3">ตั้งแต่ : </div>
+                        <div><?php echo substr($row['request_from'],0,5); ?></div>
+                      <div class="col-xs-3">จนถึง : </div>
+                        <div><?php echo substr($row['request_to'],0,5); ?></div>
+                      <div class="col-xs-3">รายละเอียด : </div>
+                        <div><?php echo $row['request_description']; ?> </div>
+                      <div class="col-xs-3">ขอโดย : </div>
+                        <div><?php echo $row['full_name']; ?></div>
+                      <div class="col-xs-3">เบอร์โทรศัพท์ : </div>
+                        <div><?php echo $row['member_tele']; ?></div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </form>
           <hr>
-        </div>
-        <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
-          <thead>
-            <tr>
-              <td style="text-align:center;width:10%">หมายเลข</td>
-              <td style="text-align:center">ชื่อสิ่งของ</td>
-              <td style="text-align:center">สถานที่</td>
-              <td style="text-align:center">รายละเอียด</td>
-              <td style="text-align:center">สถานะ</td>
-              <td style="text-align:center">ข้อมูล</td>
-            </tr>
-          </thead>
           <?php
-            $q = "SELECT * FROM broken_equipment WHERE equipment_status = 'Finish';";
-            $res = $db -> query($q);
-            while($row = $res -> fetch_array()){
-          ?>
-          <tbody>
-            <tr>
-              <td style="text-align:center"><?php echo $row['equipment_ID']; ?></td>
-              <td height="50px" width="200px" style="text-align:center;"><?php echo $row['equipment_name']; ?></td>
-              <td width="20%" style="text-align:center"><?php echo $row['equipment_campus']; ?></td>
-              <td width="30%" style="text-align:center"><?php echo $row['equipment_decription']; ?></td>
-              <td width="20%" style="text-align:center"><?php echo $row['equipment_status']; ?></td>
-              <td style="text-align:center;width:18%;">
-                <form id="prof_form" action="brokenEquip_check.php" method="post">
-                    <input type="hidden" name="equipment_no" value=<?php echo $row['equipment_ID']; ?> >
-                    <input type="hidden" name="equipment_name" value=<?php echo $row['equipment_name']; ?> >
-                    <input type="hidden" name="equipment_campus" value=<?php echo $row['equipment_campus']; ?> >
-                    <input type="hidden" name="equipment_decription" value="<?php echo $row['equipment_decription']; ?>" >
-                    <input type="hidden" name="equipment_status" value=<?php echo $row['equipment_status']; ?> >
-                    <input type="hidden" name="equipment_building" value=<?php echo $row['equipment_building']; ?> >
-                    <input type="hidden" name="equipment_room" value=<?php echo $row['equipment_room']; ?> >
-                    <input type="hidden" name="equipment_email" value=<?php echo $row['equipment_email']; ?> >
-                    <input type="hidden" name="equipment_photo" value=<?php echo $row['equipment_photo']; ?> >
-                    <input type="submit" class="btn btn-block btn-primary" value="Link">
-                </form>
-              </td>
-            </tr>
-            <?php
             }
-            ?>
-          </tbody>
-          </table>
-        </div>
-
-      <?php
-        }
-      }
-      ?>
-
-      </section>
-      <?php
-
-      ?>
+          }else{
+          ?>
+          <div style="padding-top:15%;padding-bottom:20%">
+            <h1 style="text-align: center;">
+              You don't have any work today.
+            </h1>
+          </div>
+        <?php
+          }
+        ?>
+      </div>
+    </section>
 <!-- =========================================================================================================== -->
 
     <!-- /.content -->
@@ -698,7 +630,8 @@ desired effect
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/app.min.js"></script>
-
+<!-- jQuery Knob -->
+<script src="plugins/knob/jquery.knob.js"></script>
 <!-- DataTables -->
 <script src="plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
@@ -709,17 +642,83 @@ desired effect
      fixed layout. -->
      <script>
        $(function () {
+         //Datemask dd/mm/yyyy
+         $("#datemask").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});
+         //Colorpicker
+         $(".my-colorpicker1").colorpicker();
+         //color picker with addon
+         $(".my-colorpicker2").colorpicker();
+         //Timepicker
+         $(".timepicker").timepicker({
+           minuteStep: 60,
+           defaultTime: '06:00',
+           use24hours: true,
+           showMeridian: false,
+           showInputs: false
+         });
 
          $("#example1").DataTable();
          $('#example2').DataTable({
            "paging": true,
            "lengthChange": false,
            "searching": false,
-           "ordering": true,
-           "info": false,
+           "ordering": false,
+           "info": true,
            "autoWidth": false
          });
        });
+
+       $(".knob").knob({
+
+      draw: function () {
+
+        // "tron" case
+        if (this.$.data('skin') == 'tron') {
+
+          var a = this.angle(this.cv)  // Angle
+              , sa = this.startAngle          // Previous start angle
+              , sat = this.startAngle         // Start angle
+              , ea                            // Previous end angle
+              , eat = sat + a                 // End angle
+              , r = true;
+
+          this.g.lineWidth = this.lineWidth;
+
+          this.o.cursor
+          && (sat = eat - 0.3)
+          && (eat = eat + 0.3);
+
+          if (this.o.displayPrevious) {
+            ea = this.startAngle + this.angle(this.value);
+            this.o.cursor
+            && (sa = ea - 0.3)
+            && (ea = ea + 0.3);
+            this.g.beginPath();
+            this.g.strokeStyle = this.previousColor;
+            this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sa, ea, false);
+            this.g.stroke();
+          }
+
+          this.g.beginPath();
+          this.g.strokeStyle = r ? this.o.fgColor : this.fgColor;
+          this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sat, eat, false);
+          this.g.stroke();
+
+          this.g.lineWidth = 2;
+          this.g.beginPath();
+          this.g.strokeStyle = this.o.fgColor;
+          this.g.arc(this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false);
+          this.g.stroke();
+
+          return false;
+        }
+      }
+    });
+       //Date picker
+    $('#datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      autoclose: true
+    });
      </script>
 
 

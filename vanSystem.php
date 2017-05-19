@@ -3,6 +3,26 @@
 require_once('connect.php');
 session_start();
 ?>
+<?php
+    if(isset($_GET['v'])){
+      $json_arr = array();
+      $q = 'SELECT * FROM request WHERE request_assign = '.$_GET['v'].';';
+      $res = $db -> query($q);
+      while($row = $res -> fetch_array()){
+        $array_use = array();
+        $color_rand = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+        $array_use['title'] = $row['request_to_place'];
+        $array_use['date_y'] = intval(substr($row['request_date'],0,4));
+        $array_use['date_m'] = intval(substr($row['request_date'],5,6)-1);
+        $array_use['date_d'] = intval(substr($row['request_date'],8,9));
+        $array_use['start'] = intval(substr($row['request_from'],0,2));
+        $array_use['end'] = intval(substr($row['request_to'],0,2));
+        $array_use['backgroundColor'] = $color_rand;
+        $array_use['borderColor'] = $color_rand;
+        array_push($json_arr, $array_use);
+      }
+    }
+?>
 <html>
 <head>
   <meta charset="utf-8">
@@ -16,6 +36,9 @@ session_start();
   <link rel="stylesheet" href="dist/css/AdminLTE.css">   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/skins/skin-blue.css"> <!--Choose Skin-->
   <link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css"> <!-- DataTables -->
+  <!-- fullCalendar 2.2.5-->
+  <link rel="stylesheet" href="plugins/fullcalendar/fullcalendar.min.css">
+  <link rel="stylesheet" href="plugins/fullcalendar/fullcalendar.print.css" media="print">
                   <!--[if lt IE 9]>
                   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
                   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -100,12 +123,12 @@ desired effect
           ?>
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">   <!-- Menu Toggle Button -->
-              <img src="dist/img/user2-160x160.gif" class="user-image" alt="User Image">  <!-- The user image in the navbar-->
+              <img src=<?php echo $_SESSION['u_pic']; ?> class="user-image" alt="User Image">  <!-- The user image in the navbar-->
               <span class="hidden-xs"><?php echo $_SESSION['fname']; ?></span> <!-- hidden-xs hides the username on small devices so only the image appears. -->
             </a>
             <ul class="dropdown-menu">
               <li class="user-header">  <!-- The user image in the menu -->
-                <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+                <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
                 <p>
                   <?php echo $_SESSION['fname']; ?> - Admin
 
@@ -118,7 +141,7 @@ desired effect
                     <a href="member.php?mode=0">History</a>
                   </div>
                   <div class="col-xs-4 text-center">
-                    <a href="member.php?mode=1">Reserve</a>
+                    <a href="member.php?mode=1">Request</a>
                   </div>
                   <div class="col-xs-4 text-center">
                     <a href="member.php?mode=2">Confirm</a>
@@ -155,12 +178,12 @@ desired effect
           ?>
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">   <!-- Menu Toggle Button -->
-              <img src="dist/img/user2-160x160.gif" class="user-image" alt="User Image">  <!-- The user image in the navbar-->
+              <img src=<?php echo $_SESSION['u_pic']; ?> class="user-image" alt="User Image">  <!-- The user image in the navbar-->
               <span class="hidden-xs"><?php echo $_SESSION['fname']; ?></span> <!-- hidden-xs hides the username on small devices so only the image appears. -->
             </a>
             <ul class="dropdown-menu">
               <li class="user-header">  <!-- The user image in the menu -->
-                <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+                <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
                 <p>
                   <?php echo $_SESSION['fname']; ?> - <?php echo $_SESSION['tier']; ?>
                 </p>
@@ -173,7 +196,7 @@ desired effect
                   </div>
 
                   <div class="col-xs-6 text-center">
-                    <a href="member.php?mode=1">Reserve</a>
+                    <a href="member.php?mode=1">Request</a>
                   </div>
                 </div>
                 <!-- /.row -->
@@ -234,7 +257,7 @@ desired effect
           else{
         ?>
         <div class="pull-left image">
-          <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+          <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
           <p><?php echo $_SESSION['fname']; ?></p>
@@ -333,7 +356,48 @@ desired effect
                   </li>
                 </li>
                 <?php
-                }else if($_SESSION['tier'] == 'Driver'){
+                }else if($_SESSION['tier'] == 'Admin_van'){
+                  ?>
+                    <li class="header"
+                        style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px"
+                    >
+                    <center>Admin Menu</center></li>
+                    <!-- Optionally, you can add icons to the links -->
+                    <li class="treeview">
+                      <a href="#"><i class="fa fa-link"></i><span>Van Management</span>
+                        <span class="pull-right-container">
+                          <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                      </a>
+
+                      <ul class="treeview-menu">
+                        <li><a href="admin.php?mode=0">Add/Delete Van Data</a></li>
+                        <li><a href="admin.php?mode=2">Add Week Schedule</a></li>
+                        <li><a href="analysis_van.php">Van Analysis</a></li>
+                      </ul>
+                    </li>
+
+                    <li class="treeview">
+                      <li>
+                        <a href="member.php?mode=5">
+                          <i class="fa fa-circle-o text-aqua">
+                          </i>
+                          <span>กรอกข้อมูลงานของรถตู้</span>
+                        </a>
+                      </li>
+                    </li>
+                    <li class="treeview">
+                      <li>
+                        <a href="weeklySum.php">
+                          <i class="fa fa-circle-o text-aqua">
+                          </i>
+                          <span>สรุปงาน</span>
+                        </a>
+                      </li>
+                    </li>
+
+                  <?php
+                    }else if($_SESSION['tier'] == 'Driver'){
                 ?>
                   <li class="header" style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px">
                   <center>Driver Menu</center></li>
@@ -443,10 +507,15 @@ desired effect
                   <form action="vanSystem.php?mode=0&v=<?php echo $_GET['v']; ?>" method="post" id="date_add">
                     <input type="text" name="date_pick" class="form-control pull-right" id="datepicker">
                   </form>
+                  <form action="member.php?mode=1" method="post" id="request_page"></form>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary" form="date_add">Submit</button>
-
+            <div class="col-sm-1">
+              <button type="submit" class="btn btn-primary" form="date_add">Submit</button>
+            </div>
+            <div class="col-sm-2">
+              <button type="submit" class="btn btn-danger" form="request_page">Request The Van</button>
+            </div>
           </div>
           <?php
           if(isset($_POST['date_pick']) && $_POST['date_pick'] != ''){
@@ -571,6 +640,15 @@ desired effect
         ?>
       </table>
     </div>
+    <div class="col-md-13" style="padding-top:3%">
+      <hr>
+      <center style="padding-bottom:3%;"><font size="5">Month Schedule</font></center>
+      <div class="box box-primary">
+        <div class="box-body no-padding">
+          <div id="calendar"></div>
+        </div>
+      </div>
+    </div>
     </div>
     </div>
     </section>
@@ -602,7 +680,7 @@ desired effect
         ?>
         <div class="col-sm-12" style="padding-bottom:20px">
           <div class="col-sm-3">
-            <img src="resource/image/profile.png" height="50%" width="60%" style="margin-top:5.5%;" class="user-image" alt="User Image">
+            <img src=<?php echo $row['member_pic']; ?> height="50%" width="60%" style="margin-top:5.5%;" class="user-image" alt="User Image">
           </div>
           <div class="col-sm-9">
             <center>
@@ -623,9 +701,13 @@ desired effect
                   <td style="text-align:center;width:20%">Location</td>
                   <td style="text-align:center;width:50%"><?php echo $row['location']; ?></td>
                 </tr>
-                <tr style="height:60px;">
+                <tr style="height:40px;">
                   <td style="text-align:center;width:20%">More Information</td>
                   <td style="text-align:center;width:50%"><?php echo $row['email']; ?></td>
+                </tr>
+                <tr style="height:40px;">
+                  <td style="text-align:center;width:20%">More Information</td>
+                  <td style="text-align:center;width:50%"><?php echo $row['member_tele']; ?></td>
                 </tr>
               </table>
             </center>
@@ -679,7 +761,6 @@ desired effect
               }
             }
         ?>
-
       </div>
         &nbsp; <!-- Fix Magic Bug - - -->
     </section>
@@ -707,6 +788,9 @@ desired effect
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/app.min.js"></script>
+<!-- fullCalendar 2.2.5 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+<script src="plugins/fullcalendar/fullcalendar.min.js"></script>
 
 <!-- DataTables -->
 <script src="plugins/datatables/jquery.dataTables.min.js"></script>
@@ -719,6 +803,88 @@ desired effect
      fixed layout. -->
      <script>
        $(function () {
+         /* initialize the external events
+          -----------------------------------------------------------------*/
+         function ini_events(ele) {
+           ele.each(function () {
+
+             // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
+             // it doesn't need to have a start or end
+             var eventObject = {
+               title: $.trim($(this).text()) // use the element's text as the event title
+             };
+
+             // store the Event Object in the DOM element so we can get to it later
+             $(this).data('eventObject', eventObject);
+
+             // make the event draggable using jQuery UI
+             $(this).draggable({
+               zIndex: 1070,
+               revert: true, // will cause the event to go back to its
+               revertDuration: 0  //  original position after the drag
+             });
+
+           });
+         }
+
+         ini_events($('#external-events div.external-event'));
+
+         /* initialize the calendar
+          -----------------------------------------------------------------*/
+         //Date for the calendar events (dummy data)
+         var date = new Date();
+
+         var d = date.getDate(),
+             m = date.getMonth(),
+             y = date.getFullYear();
+         var myJsArray = <?= json_encode($json_arr); ?>;
+         console.log(myJsArray);
+         for(count = 0; count < myJsArray.length; count++){
+             myJsArray[count].end = new Date(myJsArray[count].date_y, myJsArray[count].date_m, myJsArray[count].date_d, myJsArray[count].end, 0)
+             myJsArray[count].start = new Date(myJsArray[count].date_y, myJsArray[count].date_m, myJsArray[count].date_d, myJsArray[count].start, 0)
+         }
+         $('#calendar').fullCalendar({
+           header: {
+             left: 'prev,next today',
+             center: 'title',
+             right: 'month,agendaWeek,agendaDay'
+           },
+           buttonText: {
+             today: 'today',
+             month: 'month',
+             week: 'week',
+             day: 'day'
+           },
+           //Random default events
+           events: myJsArray,
+           editable: true,
+           droppable: true, // this allows things to be dropped onto the calendar !!!
+           drop: function (date, allDay) { // this function is called when something is dropped
+
+             // retrieve the dropped element's stored Event Object
+             var originalEventObject = $(this).data('eventObject');
+
+             // we need to copy it, so that multiple events don't have a reference to the same object
+             var copiedEventObject = $.extend({}, originalEventObject);
+
+             // assign it the date that was reported
+             copiedEventObject.start = date;
+             copiedEventObject.allDay = allDay;
+             copiedEventObject.backgroundColor = $(this).css("background-color");
+             copiedEventObject.borderColor = $(this).css("border-color");
+
+             // render the event on the calendar
+             // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+             $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+
+             // is the "remove after drop" checkbox checked?
+             if ($('#drop-remove').is(':checked')) {
+               // if so, remove the element from the "Draggable Events" list
+               $(this).remove();
+             }
+
+           }
+         });
          $("#example1").DataTable();
          $('#example2').DataTable({
            "paging": true,

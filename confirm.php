@@ -145,11 +145,13 @@ session_start();
     else{
       if(isset($_POST['assign_name'])){
         $q = 'UPDATE broken_equipment SET     equipment_status ="'.$_POST['status_change'].'",
-                                              equipment_assign ='.$_POST['assign_name'].'
+                                              equipment_assign ='.$_POST['assign_name'].',
+                                              equipment_date_f ="'.date("Y-m-d").'"
                             WHERE   equipment_ID ='.$_POST['id_equip'].';';
       }
       else{
-        $q = 'UPDATE broken_equipment SET     equipment_status ="'.$_POST['status_change'].'"
+        $q = 'UPDATE broken_equipment SET     equipment_status ="'.$_POST['status_change'].'",
+                                              equipment_date_f ='.date("Y-m-d").'
                             WHERE   equipment_ID ='.$_POST['id_equip'].';';
       }
       $res = $db -> query($q);
@@ -339,12 +341,26 @@ session_start();
                          WHERE    request_no ='.$_POST['request_no'].';';
     $res = $db -> query($q);
 ?>
+<?php
+  if($_POST['mem'] == 1){
+    echo "<script type='text/javascript'>";
+    echo "alert('Report Sucessful, Please wait the requester to confirm!')";
+    echo "</script>";
+    echo "<script type='text/javascript'>";
+    echo "window.location = 'driver_report.php'";
+    echo "</script>";
+  }else{
+?>
 <script type='text/javascript'>
   alert('Report Sucessful, Please wait the requester to confirm!');
 </script>
 <script type='text/javascript'>
   window.location = 'member.php?mode=3';
 </script>
+<?php
+  }
+?>
+
 <?php
   }else if($_POST['mode'] == 11){
     $q = 'UPDATE request SET      request_status = 2
@@ -475,6 +491,23 @@ session_start();
   window.location = 'manage_stock.php?mode=0';
   </script>
 
+<?php
+  }else if($_POST['mode'] == 16){
+    $q = 'UPDATE request SET      request_to_place = "'.$_POST['request_to_place'].'",
+                                  request_date = "'.$_POST['request_date'].'",
+                                  request_from = "'.$_POST['request_from'].'",
+                                  request_to = "'.$_POST['request_to'].'",
+                                  request_description = "'.$_POST['request_description'].'"
+                         WHERE    request_no ='.$_POST['request_number'].';';
+    echo $q;
+    $res = $db -> query($q);
+  ?>
+  <script type='text/javascript'>
+  alert('คุณทำรายการสำเร็จแล้ว');
+  </script>
+  <script type='text/javascript'>
+  window.location = 'member.php?mode=0';
+  </script>
 <?php
   }
 ?>

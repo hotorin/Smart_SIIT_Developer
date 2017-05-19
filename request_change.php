@@ -14,6 +14,8 @@ session_start();
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">  <!-- Ionicons -->
   <link rel="stylesheet" href="dist/css/AdminLTE.css">   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/skins/skin-blue.css"> <!--Choose Skin-->
+  <link rel="stylesheet" href="plugins/timepicker/bootstrap-timepicker.css">
+  <link rel="stylesheet" href="plugins/datepicker/datepicker3.css">
                   <!--[if lt IE 9]>
                   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
                   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -237,9 +239,9 @@ desired effect
                     <input type="hidden" name="mode" value=2>
                       <input type="hidden" name="full_name" value="<?php echo $_SESSION['fname']; ?>" >
                       <input type="hidden" name="user_num" value="<?php echo $_SESSION['user_no']; ?>" >
-                      <input type="hidden" name="username" value="<?php echo $_SESSION['user_name']; ?>" >
-                      <input type="hidden" name="password" value="<?php echo $_SESSION['user_pass']; ?>" >
-                      <input type="hidden" name="email" value="<?php echo $_SESSION['e_mail']; ?>" >
+                      <input type="hidden" name="username" value=<?php echo $_SESSION['user_name']; ?> >
+                      <input type="hidden" name="password" value=<?php echo $_SESSION['user_pass']; ?> >
+                      <input type="hidden" name="email" value=<?php echo $_SESSION['e_mail']; ?> >
                       <input type="hidden" name="user_tier" value="<?php echo $_SESSION['tier']; ?>" >
                       <input type="hidden" name="user_telephone" value="<?php echo $_SESSION['tele_number']; ?>" >
                   </form>
@@ -313,7 +315,6 @@ desired effect
 
       <!-- Sidebar Menu -->
       <ul class="sidebar-menu">
-
 
         <!-- ///////////////////////////////////      ADMIN MENU                /////////////////////////////////////////////////////// -->
 
@@ -487,13 +488,12 @@ desired effect
                 ?>
         <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 
-
         <li class="header"
             style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px"
         >
         <center>System Menu</center></li>
         <!-- Optionally, you can add icons to the links -->
-        <li class="active treeview">
+        <li class="treeview">
           <a href="#"><i class="fa fa-link"></i><span>Broken Equipment Report</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
@@ -509,7 +509,7 @@ desired effect
 
 
         <li class="treeview">
-          <a href=""><i class="fa fa-link"></i><span>Van Management</span>
+          <a href="vanindex.html"><i class="fa fa-link"></i><span>Van Management</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
@@ -532,148 +532,121 @@ desired effect
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <center>
-        <h1>
-          Please Select Current Jobs or History to view the information.
-        </h1>
-      </center>
+
     </section>
 
-<!-- ========================================== Header ========================================================= -->
     <!-- Main content -->
     <section class="content">
-      <?php
-      if(isset($_GET['mode'])){
-        if($_GET['mode'] == 0){
-      ?>
-      <div class="box" style="padding-left:10px;padding-right:10px;padding-bottom:30px">
-        <div class="box-header">
-          <h3 class="box-title" style="margin-top:10px"><b>Broken Equipment Detail</b></h3>
-          <hr>
-        </div>
-        <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
-          <thead>
-            <tr>
-              <td style="text-align:center;width:10%">หมายเลข</td>
-              <td style="text-align:center">ชื่อสิ่งของ</td>
-              <td style="text-align:center">สถานที่</td>
-              <td style="text-align:center">รายละเอียด</td>
-              <td style="text-align:center">สถานะ</td>
-              <td style="text-align:center">ข้อมูล</td>
-              <td style="text-align:center">เบิก</td>
-            </tr>
-          </thead>
-          <?php
-            $q = "SELECT * FROM broken_equipment WHERE equipment_status <> 'Finish';";
+      <div class="row">
+        <div class="col-md-6">
+          <div class="box box-body" style="padding-bottom:30px">
+            <div class="box-header with-border">
+              <i class="fa fa-file"></i>
+                <h3 class="box-title">Request Information</h3>
+            </div>
+
+            <?php
+
+            $q = "SELECT * FROM request, member WHERE request.request_no = ".$_POST['request_number']."
+                                                AND   request.request_by = member.member_id;";
             $res = $db -> query($q);
             while($row = $res -> fetch_array()){
-          ?>
-          <tbody>
-            <tr>
-              <td style="text-align:center"><?php echo $row['equipment_ID']; ?></td>
-              <td height="50px" width="200px" style="text-align:center;"><?php echo $row['equipment_name']; ?></td>
-              <td width="20%" style="text-align:center"><?php echo $row['equipment_campus']; ?></td>
-              <td width="30%" style="text-align:center"><?php echo $row['equipment_decription']; ?></td>
-              <td width="20%" style="text-align:center"><?php echo $row['equipment_status']; ?></td>
-              <td style="text-align:center;width:18%;">
-                <form id="prof_form" action="brokenEquip_check.php" method="post">
-                    <input type="hidden" name="equipment_no" value=<?php echo $row['equipment_ID']; ?> >
-                    <input type="hidden" name="equipment_name" value=<?php echo $row['equipment_name']; ?> >
-                    <input type="hidden" name="equipment_campus" value=<?php echo $row['equipment_campus']; ?> >
-                    <input type="hidden" name="equipment_decription" value="<?php echo $row['equipment_decription']; ?>" >
-                    <input type="hidden" name="equipment_status" value=<?php echo $row['equipment_status']; ?> >
-                    <input type="hidden" name="equipment_building" value=<?php echo $row['equipment_building']; ?> >
-                    <input type="hidden" name="equipment_room" value=<?php echo $row['equipment_room']; ?> >
-                    <input type="hidden" name="equipment_email" value=<?php echo $row['equipment_email']; ?> >
-                    <input type="hidden" name="equipment_photo" value=<?php echo $row['equipment_photo']; ?> >
-                    <input type="submit" class="btn btn-block btn-primary" value="Link">
-                </form>
-              </td>
-              <td style="text-align:center;width:18%;">
-                <form id="prof_form" action="withdraw.php" method="post">
-                    <input type="hidden" name="equipment_no" value=<?php echo $row['equipment_ID']; ?> >
-                    <input type="hidden" name="equipment_name" value=<?php echo $row['equipment_name']; ?> >
-                    <input type="hidden" name="equipment_campus" value=<?php echo $row['equipment_campus']; ?> >
-                    <input type="hidden" name="equipment_decription" value="<?php echo $row['equipment_decription']; ?>" >
-                    <input type="hidden" name="equipment_status" value=<?php echo $row['equipment_status']; ?> >
-                    <input type="hidden" name="equipment_building" value=<?php echo $row['equipment_building']; ?> >
-                    <input type="hidden" name="equipment_room" value=<?php echo $row['equipment_room']; ?> >
-                    <input type="hidden" name="equipment_email" value=<?php echo $row['equipment_email']; ?> >
-                    <input type="submit" class="btn btn-block btn-success" value="Link">
-                </form>
-              </td>
-            </tr>
+            ?>
+            <div class="form-group">
+              <label style="margin-top:2%">สถานที่ปลายทาง</label> : <input type="text" class="form-control pull-right" value="<?php echo $row['request_to_place']; ?>" disabled>
+              <br>
+              <label style="margin-top:10px">Request By (ขอโดย)</label> : <input type="text" class="form-control pull-right" value="<?php echo $row['full_name']; ?>" disabled>
+              <br>
+              <label style="margin-top:10px">วันที่</label> : <input type="text" class="form-control pull-right" value="<?php echo $row['request_date']; ?>" disabled>
+              <br>
+              <label style="margin-top:10px">ตั้งแต่</label> : <input type="text" class="form-control pull-right" value=<?php echo substr($row['request_from'],0,5); ?> disabled>
+              <br>
+              <label style="margin-top:10px">จนถึง</label> : <input type="text" class="form-control pull-right" value=<?php echo substr($row['request_to'],0,5); ?> disabled>
+              <br>
+              <label style="margin-top:10px">ข้อมูลเพิ่มเติม</label> :
+              <textarea class="form-control" rows="5" placeholder="<?php echo $row['request_description']; ?>" disabled></textarea>
+            </div>
+
             <?php
             }
             ?>
-          </tbody>
-          </table>
+          </div>
         </div>
-      <?php
-        }
-        else if($_GET['mode'] == 1){
-      ?>
-      <div class="box" style="padding-left:10px;padding-right:10px;padding-bottom:30px">
-        <div class="box-header">
-          <h3 class="box-title" style="margin-top:10px"><b>Broken Equipment Detail</b></h3>
-          <hr>
+        <div class="col-md-6">
+          <div class="box box-body" style="padding-bottom:30px">
+            <div class="box-header with-border">
+              <i class="fa fa-file"></i>
+                <h3 class="box-title">Assign Menu</h3>
+            </div>
+
+            <form action="confirm.php" method='post' id="confirm_form">
+              <input type="hidden" name="mode" value=16>
+              <input type="hidden" name="request_number" value=<?php echo $_POST['request_number']; ?>>
+              <?php
+              $q = "SELECT * FROM request, member WHERE request.request_no = ".$_POST['request_number']."
+                                                  AND   request.request_by = member.member_id;";
+              $res = $db -> query($q);
+              while($row = $res -> fetch_array()){
+              ?>
+              <div class="form-group">
+                <label style="margin-top:2%">สถานที่ปลายทาง</label> :
+                <input type="text" name="request_to_place" class="form-control pull-right" value="<?php echo $row['request_to_place']; ?>" >
+                <br>
+                <label style="margin-top:2%">Request By (ขอโดย)</label> :
+                <input type="text" name="full_name" class="form-control pull-right" value="<?php echo $row['full_name']; ?>" disabled>
+                <br>
+                <label style="margin-top:10px">Date (วันที่)</label> :
+                <input type="text" name="request_date" id="datepicker" class="form-control pull-right" value="<?php echo $row['request_date']; ?>" >
+                <br>
+                <div class="bootstrap-timepicker">
+                  <div class="form-group">
+                    <label style="margin-top:10px">From (ตั้งแต่)</label>
+                    <div class="input-group" style="margin-bottom:10px;">
+                      <input type="text" name="request_from" class="form-control timepicker" value=<?php echo substr($row['request_from'],0,5); ?> required>
+                      <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bootstrap-timepicker">
+                  <div class="form-group">
+                    <label>To (จนถึง)</label>
+                    <div class="input-group" style="margin-bottom:10px;">
+                      <input type="text" name="request_to" class="form-control timepicker" value=<?php echo substr($row['request_to'],0,5); ?> required>
+                      <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <label>Description (ข้อมูลเพิ่มเติม)</label> :
+                <textarea class="form-control" rows="5" name="request_description" placeholder="<?php echo $row['request_description']; ?>" form="confirm_form"><?php echo $row['request_description']; ?></textarea>
+              </div>
+
+              <?php
+              }
+              ?>
+            </form>
+            <div class="col-md-6">
+              <button type="submit" class="btn btn-block btn-primary" form="confirm_form">
+                แก้ไข
+              </button>
+            </div>
+
+            <div class="col-md-6">
+              <form action="member.php?mode=0" method='post' id="delete_form">
+                <button type="submit" class="btn btn-block btn-danger">
+                  กลับบ้านหน้าก่อน
+                </button>
+              </form>
+            </div>
+
+          </div>
         </div>
-        <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
-          <thead>
-            <tr>
-              <td style="text-align:center;width:10%">หมายเลข</td>
-              <td style="text-align:center">ชื่อสิ่งของ</td>
-              <td style="text-align:center">สถานที่</td>
-              <td style="text-align:center">รายละเอียด</td>
-              <td style="text-align:center">สถานะ</td>
-              <td style="text-align:center">ข้อมูล</td>
-            </tr>
-          </thead>
-          <?php
-            $q = "SELECT * FROM broken_equipment WHERE equipment_status = 'Finish';";
-            $res = $db -> query($q);
-            while($row = $res -> fetch_array()){
-          ?>
-          <tbody>
-            <tr>
-              <td style="text-align:center"><?php echo $row['equipment_ID']; ?></td>
-              <td height="50px" width="200px" style="text-align:center;"><?php echo $row['equipment_name']; ?></td>
-              <td width="20%" style="text-align:center"><?php echo $row['equipment_campus']; ?></td>
-              <td width="30%" style="text-align:center"><?php echo $row['equipment_decription']; ?></td>
-              <td width="20%" style="text-align:center"><?php echo $row['equipment_status']; ?></td>
-              <td style="text-align:center;width:18%;">
-                <form id="prof_form" action="brokenEquip_check.php" method="post">
-                    <input type="hidden" name="equipment_no" value=<?php echo $row['equipment_ID']; ?> >
-                    <input type="hidden" name="equipment_name" value=<?php echo $row['equipment_name']; ?> >
-                    <input type="hidden" name="equipment_campus" value=<?php echo $row['equipment_campus']; ?> >
-                    <input type="hidden" name="equipment_decription" value="<?php echo $row['equipment_decription']; ?>" >
-                    <input type="hidden" name="equipment_status" value=<?php echo $row['equipment_status']; ?> >
-                    <input type="hidden" name="equipment_building" value=<?php echo $row['equipment_building']; ?> >
-                    <input type="hidden" name="equipment_room" value=<?php echo $row['equipment_room']; ?> >
-                    <input type="hidden" name="equipment_email" value=<?php echo $row['equipment_email']; ?> >
-                    <input type="hidden" name="equipment_photo" value=<?php echo $row['equipment_photo']; ?> >
-                    <input type="submit" class="btn btn-block btn-primary" value="Link">
-                </form>
-              </td>
-            </tr>
-            <?php
-            }
-            ?>
-          </tbody>
-          </table>
-        </div>
-
-      <?php
-        }
-      }
-      ?>
-
-      </section>
-      <?php
-
-      ?>
-<!-- =========================================================================================================== -->
-
+      </div>
+    </section>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
@@ -698,30 +671,52 @@ desired effect
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/app.min.js"></script>
+<!-- date-range-picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
+<!-- bootstrap datepicker -->
+<script src="plugins/datepicker/bootstrap-datepicker.js"></script>
+<!-- bootstrap time picker -->
+<script src="plugins/timepicker/bootstrap-timepicker.min.js"></script>
+<!-- InputMask -->
+<script src="plugins/input-mask/jquery.inputmask.js"></script>
+<script src="plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+<script src="plugins/input-mask/jquery.inputmask.extensions.js"></script>
 
-<!-- DataTables -->
-<script src="plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
+<script>
+  $(function () {
+    //Datemask dd/mm/yyyy
+    $("#datemask").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});
+    //Timepicker
+    $(".timepicker").timepicker({
+      minuteStep: 60,
+      defaultTime: '06:00',
+      use24hours: true,
+      showMeridian: false,
+      showInputs: false
+    });
+
+    $("#example1").DataTable();
+    $('#example2').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": false,
+      "info": true,
+      "autoWidth": false
+    });
+  });
+
+  //Date picker
+$('#datepicker').datepicker({
+ format: 'yyyy-mm-dd',
+ autoclose: true
+});
+</script>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
      user experience. Slimscroll is required when using the
      fixed layout. -->
-     <script>
-       $(function () {
-
-         $("#example1").DataTable();
-         $('#example2').DataTable({
-           "paging": true,
-           "lengthChange": false,
-           "searching": false,
-           "ordering": true,
-           "info": false,
-           "autoWidth": false
-         });
-       });
-     </script>
-
-
 </body>
 </html>

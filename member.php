@@ -101,12 +101,12 @@ desired effect
           ?>
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">   <!-- Menu Toggle Button -->
-              <img src="dist/img/user2-160x160.gif" class="user-image" alt="User Image">  <!-- The user image in the navbar-->
+              <img src=<?php echo $_SESSION['u_pic']; ?> class="user-image" alt="User Image">  <!-- The user image in the navbar-->
               <span class="hidden-xs"><?php echo $_SESSION['fname']; ?></span> <!-- hidden-xs hides the username on small devices so only the image appears. -->
             </a>
             <ul class="dropdown-menu">
               <li class="user-header">  <!-- The user image in the menu -->
-                <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+                <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
                 <p>
                   <?php echo $_SESSION['fname']; ?> - Admin
 
@@ -119,7 +119,7 @@ desired effect
                     <a href="member.php?mode=0">History</a>
                   </div>
                   <div class="col-xs-4 text-center">
-                    <a href="member.php?mode=1">Reserve</a>
+                    <a href="member.php?mode=1">Request</a>
                   </div>
                   <div class="col-xs-4 text-center">
                     <a href="member.php?mode=2">Confirm</a>
@@ -151,17 +151,69 @@ desired effect
             </ul>
           </li>
           <?php
-            }
-            else{
+            }else if($_SESSION['tier'] == 'Admin_van'){
+              ?>
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">   <!-- Menu Toggle Button -->
+                  <img src=<?php echo $_SESSION['u_pic']; ?> class="user-image" alt="User Image">  <!-- The user image in the navbar-->
+                  <span class="hidden-xs"><?php echo $_SESSION['fname']; ?></span> <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="user-header">  <!-- The user image in the menu -->
+                    <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
+                    <p>
+                      <?php echo $_SESSION['fname']; ?> - Admin
+                    </p>
+                  </li>
+
+                  <li class="user-body">
+                    <div class="row">
+                      <div class="col-xs-4 text-center">
+                        <a href="member.php?mode=0">History</a>
+                      </div>
+                      <div class="col-xs-4 text-center">
+                        <a href="member.php?mode=1">Request</a>
+                      </div>
+                      <div class="col-xs-4 text-center">
+                        <a href="member.php?mode=2">Confirm</a>
+                      </div>
+                    </div>
+                    <!-- /.row -->
+                  </li>
+
+                  <!-- Menu Footer-->
+                  <li class="user-footer">
+                    <div class="pull-left">
+                      <form action="profile.php?mode=2" method="post">
+                        <input type="submit" class="btn btn-default btn-flat" value="Profile" />
+                        <input type="hidden" name="mode" value=2>
+                          <input type="hidden" name="full_name" value="<?php echo $_SESSION['fname']; ?>" >
+                          <input type="hidden" name="user_num" value="<?php echo $_SESSION['user_no']; ?>" >
+                          <input type="hidden" name="username" value="<?php echo $_SESSION['user_name']; ?>" >
+                          <input type="hidden" name="password" value="<?php echo $_SESSION['user_pass']; ?>" >
+                          <input type="hidden" name="email" value="<?php echo $_SESSION['e_mail']; ?>" >
+                          <input type="hidden" name="user_tier" value="<?php echo $_SESSION['tier']; ?>" >
+                          <input type="hidden" name="user_telephone" value="<?php echo $_SESSION['tele_number']; ?>" >
+                      </form>
+                    </div>
+
+                    <div class="pull-right">
+                      <a href="logout.php" class="btn btn-default btn-flat">Log Out</a>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <?php
+            }else{
           ?>
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">   <!-- Menu Toggle Button -->
-              <img src="dist/img/user2-160x160.gif" class="user-image" alt="User Image">  <!-- The user image in the navbar-->
+              <img src=<?php echo $_SESSION['u_pic']; ?> class="user-image" alt="User Image">  <!-- The user image in the navbar-->
               <span class="hidden-xs"><?php echo $_SESSION['fname']; ?></span> <!-- hidden-xs hides the username on small devices so only the image appears. -->
             </a>
             <ul class="dropdown-menu">
               <li class="user-header">  <!-- The user image in the menu -->
-                <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+                <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
                 <p>
                   <?php echo $_SESSION['fname']; ?> - <?php echo $_SESSION['tier']; ?>
                 </p>
@@ -174,7 +226,7 @@ desired effect
                   </div>
 
                   <div class="col-xs-6 text-center">
-                    <a href="member.php?mode=1">Reserve</a>
+                    <a href="member.php?mode=1">Request</a>
                   </div>
                 </div>
                 <!-- /.row -->
@@ -235,7 +287,7 @@ desired effect
           else{
         ?>
         <div class="pull-left image">
-          <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+          <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
           <p><?php echo $_SESSION['fname']; ?></p>
@@ -300,6 +352,7 @@ desired effect
           <ul class="treeview-menu">
             <li><a href="manage_stock.php?mode=0">Add/Delete Stock</a></li>
             <li><a href="manage_stock.php?mode=1">View Stock</a></li>
+            <li><a href="manage_stock.php?mode=2">รายงานสต็อค</a></li>
           </ul>
         </li>
 
@@ -330,12 +383,53 @@ desired effect
             <a href="weeklySum.php">
               <i class="fa fa-circle-o text-aqua">
               </i>
-              <span>Weekly Report</span>
+              <span>สรุปงาน</span>
             </a>
           </li>
         </li>
         <?php
-        }else if($_SESSION['tier'] == 'Driver'){
+        }else if($_SESSION['tier'] == 'Admin_van'){
+          ?>
+            <li class="header"
+                style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px"
+            >
+            <center>Admin Menu</center></li>
+            <!-- Optionally, you can add icons to the links -->
+            <li class="treeview">
+              <a href="#"><i class="fa fa-link"></i><span>Van Management</span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span>
+              </a>
+
+              <ul class="treeview-menu">
+                <li><a href="admin.php?mode=0">Add/Delete Van Data</a></li>
+                <li><a href="admin.php?mode=2">Add Week Schedule</a></li>
+                <li><a href="analysis_van.php">Van Analysis</a></li>
+              </ul>
+            </li>
+
+            <li class="treeview">
+              <li>
+                <a href="driver_report.php">
+                  <i class="fa fa-circle-o text-aqua">
+                  </i>
+                  <span>กรอกข้อมูลงานของรถตู้</span>
+                </a>
+              </li>
+            </li>
+            <li class="treeview">
+              <li>
+                <a href="weeklySum.php">
+                  <i class="fa fa-circle-o text-aqua">
+                  </i>
+                  <span>สรุปงาน</span>
+                </a>
+              </li>
+            </li>
+
+          <?php
+            }else if($_SESSION['tier'] == 'Driver'){
         ?>
           <li class="header" style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px">
           <center>Driver Menu</center></li>
@@ -363,6 +457,7 @@ desired effect
                   <ul class="treeview-menu">
                     <li><a href="manage_stock.php?mode=0">Add/Delete Stock</a></li>
                     <li><a href="manage_stock.php?mode=1">View Stock</a></li>
+                    <li><a href="manage_stock.php?mode=2">รายงานสต็อค</a></li>
                   </ul>
                 </li>
           <?php
@@ -384,7 +479,7 @@ desired effect
           <a href="weeklySum.php">
             <i class="fa fa-circle-o text-aqua">
             </i>
-            <span>Weekly Report</span>
+            <span>สรุปงาน</span>
           </a>
         </li>
       </li>
@@ -456,13 +551,14 @@ desired effect
         <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center"><!-- style="width:100%;margin-top:20px;" align="center" > -->
           <thead>
           <tr style="height:30px;">
-            <th style="text-align:center;width:15%;">Request No.</th>
-            <th style="text-align:center;width:30%;">Request Location</th>
-            <th style="text-align:center;width:30%;">Status</th>
-            <th style="text-align:center;width:30%;">Date</th>
-            <th style="text-align:center;width:30%;">From</th>
-            <th style="text-align:center;width:30%;">To</th>
-            <th style="text-align:center;width:30%;">Cancel</th>
+            <th style="text-align:center;width:15%;">เลขที่คำขอ</th>
+            <th style="text-align:center;width:30%;">สถานที่ปลายทาง</th>
+            <th style="text-align:center;width:20%;">สถานะ</th>
+            <th style="text-align:center;width:30%;">วันที่</th>
+            <th style="text-align:center;width:30%;">ตั้งแต่</th>
+            <th style="text-align:center;width:30%;">จนถึง</th>
+            <th style="text-align:center;width:30%;">แก้ไข</th>
+            <th style="text-align:center;width:30%;">ยกเลิก</th>
           </tr>
         </thead>
         <tbody>
@@ -474,10 +570,32 @@ desired effect
         <tr style="height:30px;">
           <th style="text-align:center;width:15%;"><?php echo $row['request_no']; ?></th>
           <th style="text-align:center;width:30%;"><?php echo $row['request_to_place']; ?></th>
-          <th style="text-align:center;width:30%;"><?php echo $row['request_approve']; ?></th>
+          <th style="text-align:center;width:20%;">
+            <?php
+              if($row['request_approve'] == 'Waiting'){
+                echo '<form action="confirm.php" method="post">';
+                echo '<input type="hidden" name="mode" value=7 >';
+                echo '<input type="hidden" name="request_number" value='.$row['request_no'].'>';
+                echo '<button type="submit" class="btn btn-block btn-primary">';
+                echo 'Wait/แก้ไขข้อขมูล';
+                echo '</button>';
+                echo '</form>';
+              }else{
+                echo $row['request_approve'];
+              }
+            ?>
+          </th>
           <th style="text-align:center;width:30%;"><?php echo $row['request_date']; ?></th>
           <th style="text-align:center;width:30%;"><?php echo substr($row['request_from'], 0, 5); ?></th>
           <th style="text-align:center;width:30%;"><?php echo substr($row['request_to'], 0, 5); ?></th>
+          <th style="text-align:center;width:30%;">
+            <form action="request_change.php" method="post">
+              <input type="hidden" name="request_number" value=<?php echo $row['request_no']; ?>>
+              <button type="submit" class="btn btn-block btn-primary">
+                แก้ไข
+              </button>
+            </form>
+          </th>
           <th style="text-align:center;width:30%;">
             <form action="confirm.php" method="post">
               <input type="hidden" name="mode" value=7 >
@@ -543,6 +661,7 @@ desired effect
               </div>
               <!-- /.form group -->
             </div>
+
 
             <div class="bootstrap-timepicker">
               <div class="form-group">
@@ -725,7 +844,7 @@ desired effect
 
 
     <?php
-    }else if($_GET['mode'] == 4 && $_SESSION['tier'] == 'Driver'){
+  }else if($_GET['mode'] == 4 && ($_SESSION['tier'] == 'Driver' || $_SESSION['tier'] == 'Admin_van' ) ){
     ?>
     <section class="content-header">
       <h1>
@@ -745,6 +864,9 @@ desired effect
 
             <form action="confirm.php" method="post" id="request_form">
               <input type="hidden" name="mode" value=10>
+              <?php
+                if($_SESSION['tier'] == 'Admin_van'){echo '<input type="hidden" name="mem" value=1>';}
+              ?>
               <input type="hidden" name="request_no" value=<?php echo $_POST['r_no']; ?>>
               <input type="hidden" name="request_status" value=<?php echo $_POST['r_status']; ?>>
 

@@ -71,12 +71,12 @@ session_start();
           ?>
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">   <!-- Menu Toggle Button -->
-              <img src="dist/img/user2-160x160.gif" class="user-image" alt="User Image">  <!-- The user image in the navbar-->
+              <img src=<?php echo $_SESSION['u_pic']; ?> class="user-image" alt="User Image">  <!-- The user image in the navbar-->
               <span class="hidden-xs"><?php echo $_SESSION['fname']; ?></span> <!-- hidden-xs hides the username on small devices so only the image appears. -->
             </a>
             <ul class="dropdown-menu">
               <li class="user-header">  <!-- The user image in the menu -->
-                <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+                <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
                 <p>
                   <?php echo $_SESSION['fname']; ?> - Admin
 
@@ -89,7 +89,7 @@ session_start();
                     <a href="member.php?mode=0">History</a>
                   </div>
                   <div class="col-xs-4 text-center">
-                    <a href="member.php?mode=1">Reserve</a>
+                    <a href="member.php?mode=1">Request</a>
                   </div>
                   <div class="col-xs-4 text-center">
                     <a href="member.php?mode=2">Confirm</a>
@@ -121,17 +121,69 @@ session_start();
             </ul>
           </li>
           <?php
-            }
-            else{
+            }else if($_SESSION['tier'] == 'Admin_van'){
+              ?>
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">   <!-- Menu Toggle Button -->
+                  <img src=<?php echo $_SESSION['u_pic']; ?> class="user-image" alt="User Image">  <!-- The user image in the navbar-->
+                  <span class="hidden-xs"><?php echo $_SESSION['fname']; ?></span> <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="user-header">  <!-- The user image in the menu -->
+                    <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
+                    <p>
+                      <?php echo $_SESSION['fname']; ?> - Admin
+                    </p>
+                  </li>
+
+                  <li class="user-body">
+                    <div class="row">
+                      <div class="col-xs-4 text-center">
+                        <a href="member.php?mode=0">History</a>
+                      </div>
+                      <div class="col-xs-4 text-center">
+                        <a href="member.php?mode=1">Request</a>
+                      </div>
+                      <div class="col-xs-4 text-center">
+                        <a href="member.php?mode=2">Confirm</a>
+                      </div>
+                    </div>
+                    <!-- /.row -->
+                  </li>
+
+                  <!-- Menu Footer-->
+                  <li class="user-footer">
+                    <div class="pull-left">
+                      <form action="profile.php?mode=2" method="post">
+                        <input type="submit" class="btn btn-default btn-flat" value="Profile" />
+                        <input type="hidden" name="mode" value=2>
+                          <input type="hidden" name="full_name" value="<?php echo $_SESSION['fname']; ?>" >
+                          <input type="hidden" name="user_num" value="<?php echo $_SESSION['user_no']; ?>" >
+                          <input type="hidden" name="username" value="<?php echo $_SESSION['user_name']; ?>" >
+                          <input type="hidden" name="password" value="<?php echo $_SESSION['user_pass']; ?>" >
+                          <input type="hidden" name="email" value="<?php echo $_SESSION['e_mail']; ?>" >
+                          <input type="hidden" name="user_tier" value="<?php echo $_SESSION['tier']; ?>" >
+                          <input type="hidden" name="user_telephone" value="<?php echo $_SESSION['tele_number']; ?>" >
+                      </form>
+                    </div>
+
+                    <div class="pull-right">
+                      <a href="logout.php" class="btn btn-default btn-flat">Log Out</a>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <?php
+            }else{
           ?>
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">   <!-- Menu Toggle Button -->
-              <img src="dist/img/user2-160x160.gif" class="user-image" alt="User Image">  <!-- The user image in the navbar-->
+              <img src=<?php echo $_SESSION['u_pic']; ?> class="user-image" alt="User Image">  <!-- The user image in the navbar-->
               <span class="hidden-xs"><?php echo $_SESSION['fname']; ?></span> <!-- hidden-xs hides the username on small devices so only the image appears. -->
             </a>
             <ul class="dropdown-menu">
               <li class="user-header">  <!-- The user image in the menu -->
-                <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+                <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
                 <p>
                   <?php echo $_SESSION['fname']; ?> - <?php echo $_SESSION['tier']; ?>
                 </p>
@@ -143,7 +195,7 @@ session_start();
                   </div>
 
                   <div class="col-xs-6 text-center">
-                    <a href="member.php?mode=1">Reserve</a>
+                    <a href="member.php?mode=1">Request</a>
                   </div>
                 </div>
                 <!-- /.row -->
@@ -202,7 +254,7 @@ session_start();
           else{
         ?>
         <div class="pull-left image">
-          <img src="dist/img/user2-160x160.gif" class="img-circle" alt="User Image">
+          <img src=<?php echo $_SESSION['u_pic']; ?> class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
           <p><?php echo $_SESSION['fname']; ?></p>
@@ -281,12 +333,53 @@ session_start();
                     <a href="weeklySum.php">
                       <i class="fa fa-circle-o text-aqua">
                       </i>
-                      <span>Weekly Report</span>
+                      <span>สรุปงาน</span>
                     </a>
                   </li>
                 </li>
                 <?php
-                }else if($_SESSION['tier'] == 'Driver'){
+                }else if($_SESSION['tier'] == 'Admin_van'){
+                  ?>
+                    <li class="header"
+                        style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px"
+                    >
+                    <center>Admin Menu</center></li>
+                    <!-- Optionally, you can add icons to the links -->
+                    <li class="treeview">
+                      <a href="#"><i class="fa fa-link"></i><span>Van Management</span>
+                        <span class="pull-right-container">
+                          <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                      </a>
+
+                      <ul class="treeview-menu">
+                        <li><a href="admin.php?mode=0">Add/Delete Van Data</a></li>
+                        <li><a href="admin.php?mode=2">Add Week Schedule</a></li>
+                        <li><a href="analysis_van.php">Van Analysis</a></li>
+                      </ul>
+                    </li>
+
+                    <li class="treeview">
+                      <li>
+                        <a href="driver_report.php">
+                          <i class="fa fa-circle-o text-aqua">
+                          </i>
+                          <span>กรอกข้อมูลงานของรถตู้</span>
+                        </a>
+                      </li>
+                    </li>
+                    <li class="treeview">
+                      <li>
+                        <a href="weeklySum.php">
+                          <i class="fa fa-circle-o text-aqua">
+                          </i>
+                          <span>สรุปงาน</span>
+                        </a>
+                      </li>
+                    </li>
+
+                  <?php
+                    }else if($_SESSION['tier'] == 'Driver'){
                 ?>
                   <li class="header" style="margin-top:20px;padding-top:20px;padding-bottom:20px;font-size:20px">
                   <center>Driver Menu</center></li>
@@ -318,7 +411,7 @@ session_start();
                   <a href="weeklySum.php">
                     <i class="fa fa-circle-o text-aqua">
                     </i>
-                    <span>Weekly Report</span>
+                    <span>สรุปงาน</span>
                   </a>
                 </li>
               </li>
@@ -451,8 +544,8 @@ session_start();
             <table id="example2" class="table table-bordered table-hover" style="width:100%;" align="center">
               <thead>
                 <tr>
-                  <td style="text-align:center;width:10%">Van Number</td>
-                  <td style="text-align:center;width:20%">Current Location</td>
+                  <td style="text-align:center;width:10%:height:20px">Van Number</td>
+                  <td style="text-align:center;width:30%">Current Location</td>
                   <td style="text-align:center">Request By</td>
                   <td style="text-align:center">Status</td>
                 </tr>
@@ -466,10 +559,27 @@ session_start();
 
           <tbody>
             <tr>
-            <td style="text-align:center"><?php echo $row['van_no']; ?></td>
+            <td style="text-align:center;height:20px"><?php echo $row['van_no']; ?></td>
             <td style="text-align:center"><?php echo $row['current_location']; ?></td>
-            <td style="text-align:center"><?php echo $row['request_by']; ?></td>
-            <td style="text-align:center"><?php echo $row['status']; ?></td>
+            <?php
+              $q1 = 'SELECT * FROM request, member WHERE  request_date = "'.date("Y-m-d").'"
+                                            AND   request_from <= "'.date("h:i:s").'"
+                                            AND   request_to >= "'.date("h:i:s").'"
+                                            AND   request_assign = '.$row['van_no'].'
+                                            AND   member_id = request_by;';
+              $res1 = $db -> query($q1);
+              if ($res1 && $res1->num_rows == 1 ){
+                while($row1 = $res1 -> fetch_array()){
+                    echo "<td style='text-align:center'>".$row1['full_name']."  -  ".$row1['member_tele']."</td>";
+                    echo "<td style='text-align:center'>Working</td>";
+                }
+              }else{
+
+                    echo "<td style='text-align:center'>None</td>";
+                    echo "<td style='text-align:center'>Free</td>";
+              }
+            ?>
+
             </tr>
           </tbody>
 
